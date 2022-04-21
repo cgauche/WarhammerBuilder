@@ -8,9 +8,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class BuilderController extends AbstractController
 {
-    /**
-     * @Route("/builder", name="builder")
-     */
+    #[Route('/builder', name: 'builder')]
     public function index(): Response
     {
         return $this->render('builder/index.html.twig', [
