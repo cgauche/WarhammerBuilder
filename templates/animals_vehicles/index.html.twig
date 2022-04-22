@@ -1,0 +1,179 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edition des véhicules{% endblock %}
+
+{% block body %}
+<!-- Override graphic framework, do some shit on select input -->
+<style>
+    select {
+        display: flex;
+    }
+</style>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var elems = document.querySelectorAll('.modal');
+        var instances = M.Modal.init(elems, { dismissible: false });
+    });
+
+    window.onload = loadTable;
+    function loadTable() {
+        $.ajax({
+            url : "readAllAV",
+            type : "POST",
+            dataType : "html",
+            success : function(data, status){
+                $("#table").html(data);
+            },
+            error : function(error, status, errorThrow){
+                console.log(status + "\n" + errorThrow)
+            }
+        })
+    }
+
+    function openForm(id = '') {
+        $.ajax({
+            url : "readAV",
+            data : {
+                id : id
+            },
+            type : "POST",
+            dataType : "html",
+            success : function(data, status){
+                $("#formAV").html(data);
+            },
+            error : function(error, status, errorThrow){
+                console.log(status + "\n" + errorThrow)
+            },
+            complete : function (){
+                var elem = document.getElementById('modalAV')
+                document.getElementsByClassName('modButton')[0].setAttribute('id',id)
+                M.Modal.getInstance(elem).open()
+            }
+        })
+    }
+
+    function saveAV(id) {
+        var name = document.getElementById("animals_vehicles_name").value
+        var price = document.getElementById("animals_vehicles_price").value
+        var clutter = document.getElementById("animals_vehicles_clutter").value
+        var contents = document.getElementById("animals_vehicles_contents").value
+        var availability = document.getElementById("animals_vehicles_availability").value
+        var idSource = document.getElementById("animals_vehicles_idSource").value
+
+        if(name == '') {
+            M.toast({html : 'Veuillez saisir un nom pour le véhicule.', classes : 'red lighten-1'})
+        }else if(clutter == ''){
+            M.toast({html : 'Veuillez saisir un encombrement pour la source.', classes : 'red lighten-1'})
+        }else{
+            if( id != ''){
+                $.ajax({
+                    url : "updateAV",
+                    data : {
+                        id : id,
+                        name : name,
+                        price : price,
+                        clutter : clutter,
+                        contents : contents,
+                        availability : availability,
+                        idSource : idSource
+                    },
+                    type : "POST",
+                    dataType : "json",
+                    success : function(data, status){
+                        M.toast({html : 'Véhicule modifée avec succès !'})
+                        M.Modal.getInstance(document.getElementById('modalAV')).close()
+                        loadTable();
+                    },
+                    error : function(error, status, errorThrow){
+                        console.log(status + "\n" + errorThrow)
+                    }
+                })
+            }else{
+                $.ajax({
+                    url : "createAV",
+                    data : {
+                        name : name,
+                        price : price,
+                        clutter : clutter,
+                        contents : contents,
+                        availability : availability,
+                        idSource : idSource
+                    },
+                    type : "POST",
+                    dataType : "json",
+                    success : function(data, status){
+                        M.toast({html : 'Véhicule créé avec succès !'})
+                        M.Modal.getInstance(document.getElementById('modalAV')).close()
+                        loadTable();
+                    },
+                    error : function(error, status, errorThrow){
+                        console.log(status + "\n" + errorThrow)
+                    }
+                })
+            }
+        }
+        
+    }
+
+    function delAV(id) {
+        $.ajax({
+            url : "deleteAV",
+            data : {
+                id : id
+            },
+            type : "POST",
+            dataType : "json",
+            success : function(data, status){
+                M.toast({html : 'Véhicule supprimé avec succès !'})
+                loadTable();
+            },
+            error : function(error, status, errorThrow){
+                console.log(status + "\n" + errorThrow)
+            }
+        })
+    }
+
+    function delMsg(id) {
+        var elem = $('#delAV')
+        document.getElementsByClassName('delButton')[0].setAttribute('id',id)
+        M.Modal.getInstance(elem).open()
+    }
+
+</script>
+<div class="container">
+    <div class="section">
+        <h3 style="text-align:center">Edition des véhicules</h3>
+    </div>
+    <a class="waves-effect waves-light btn" href="/admin">Retour</a>
+    <table id='table'>
+    </table>
+
+    <!-- Modal modalAV -->
+    <div id="modalAV" class="modal">
+        <div class="modal-content">
+            <h4 id="formTitle">Véhicule</h4>
+            <div id='formAV' class="input-field"></div>
+        </div>
+        <div class="modal-footer">
+            <a onclick="saveAV(this.id)" class="waves-effect waves-green btn-flat modButton">Enregistrer</a>
+            <a href="#!" class="modal-close waves-effect waves-red btn-flat">Annuler</a>
+        </div>
+    </div>
+
+    <!-- Modal deleteAV -->
+    <div id="delAV" class="modal">
+        <div class="modal-content">
+            <h4>Attention !</h4>
+            <p>
+                Cette suppression est irréversible.
+                <br>
+                Voulez-vous continuer ?
+            </p>
+        </div>
+        <div class="modal-footer">
+            <a onclick="delAV(this.id)" class="modal-close waves-effect waves-green btn-flat delButton">Oui</a>
+            <a href="#!" class="modal-close waves-effect waves-red btn-flat">Non</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

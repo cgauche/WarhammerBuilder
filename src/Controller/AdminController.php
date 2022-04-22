@@ -13,6 +13,14 @@ class AdminController extends AbstractController
     public function index(): Response
     {
         $linkToEdit = $this->generateUrl('editSource');
-        return $this->render('admin/index.html.twig', ['linkToEdit' => $linkToEdit]);
+        $linkToAV = $this->generateUrl('editAV');
+        $linkToClasses = $this->generateUrl('editClasses');
+        $linkToSpecies = $this->generateUrl('editSpecies');
+        return $this->render('admin/index.html.twig', [
+            'linkToSource' => $linkToEdit,
+            'linkToAV' => $linkToAV,
+            'linkToClasses' => $linkToClasses,
+            'linkToSpecies' => $linkToSpecies
+        ]);
     }
 }

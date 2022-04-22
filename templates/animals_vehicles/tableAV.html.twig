@@ -1,0 +1,28 @@
+<tr>
+        <th>Nom</th>
+        <th>Prix</th>
+        <th>Encombrement</th>
+        <th>Contenu</th>
+        <th>Disponibilité</th>
+        <th>Source</th>
+        <th style="text-align:right">
+                <a class="waves-effect waves-light btn" onclick="openForm()"><i
+                        class="material-icons">add_circle_outline</i></a>
+        </th>
+</tr>
+{% for AV in vehicles %}
+        <tr>
+                <td>{{AV['name']}}</td>
+                <td>{{AV['price']}}</td>
+                <td>{{AV['clutter']}}</td>
+                <td>{{AV['contents']}}</td>
+                <td>{{AV['availability']}}</td>
+                <td>{{AV['source']}}</td>
+                <td style="text-align:right">
+                <a class="waves-effect waves-light btn" onclick="openForm(this.id)" id="{{AV['id']}}"><i
+                        class="material-icons">border_color</i></a>
+                <a class="waves-effect waves-light btn modal-trigger" onclick="delMsg(this.id)" id="{{AV['id']}}"><i
+                        class="material-icons">delete</i></a>
+                </td>
+        </tr>
+{% endfor %}
