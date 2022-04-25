@@ -1,0 +1,176 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edition des carrières{% endblock %}
+
+{% block body %}
+<!-- Override graphic framework, do some shit on select input -->
+<style>
+    select {
+        display: flex;
+    }
+</style>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var elems = document.querySelectorAll('.modal');
+        var instances = M.Modal.init(elems, { dismissible: false });
+    });
+
+    window.onload = loadTable;
+    function loadTable() {
+        $.ajax({
+            url : "readAllCareers",
+            type : "POST",
+            dataType : "html",
+            success : function(data, status){
+                $("#table").html(data);
+            },
+            error : function(error, status, errorThrow){
+                console.log(status + "\n" + errorThrow)
+            }
+        })
+    }
+
+    function openForm(id = '') {
+        $.ajax({
+            url : "readCareers",
+            data : {
+                id : id
+            },
+            type : "POST",
+            dataType : "html",
+            success : function(data, status){
+                $("#formCareers").html(data);
+            },
+            error : function(error, status, errorThrow){
+                console.log(status + "\n" + errorThrow)
+            },  
+            complete : function (){
+                var elem = document.getElementById('modalCareers')
+                document.getElementsByClassName('modButton')[0].setAttribute('id',id)
+                M.Modal.getInstance(elem).open()
+            }
+        })
+    }
+
+    function saveCareers(id) {
+        var name = document.getElementById("careers_name").value
+        var desc = document.getElementById("careers_description").value
+        var resume = document.getElementById("careers_resume").value
+        var idClasse = document.getElementById("careers_idClass").value
+        var idSource = document.getElementById("careers_idSource").value
+
+        if(name == '') {
+            M.toast({html : 'Veuillez saisir un nom pour la carrière.', classes : 'red lighten-1'})
+        }else if(idClasse == ''){
+            M.toast({html : 'Veuillez sélectionner une classe pour la carrière.', classes : 'red lighten-1'})
+        }else{
+            if( id != ''){
+                $.ajax({
+                    url : "updateCareers",
+                    data : {
+                        id : id,
+                        name : name,
+                        desc : desc,
+                        resume : resume,
+                        idClasse : idClasse,
+                        idSource : idSource
+                    },
+                    type : "POST",
+                    dataType : "json",
+                    success : function(data, status){
+                        M.toast({html : 'Carrière modifée avec succès !'})
+                        M.Modal.getInstance(document.getElementById('modalCareers')).close()
+                        loadTable();
+                    },
+                    error : function(error, status, errorThrow){
+                        console.log(status + "\n" + errorThrow)
+                    }
+                })
+            }else{
+                $.ajax({
+                    url : "createCareers",
+                    data : {
+                        name : name,
+                        desc : desc,
+                        resume : resume,
+                        idClasse : idClasse,
+                        idSource : idSource
+                    },
+                    type : "POST",
+                    dataType : "json",
+                    success : function(data, status){
+                        M.toast({html : 'Carrière créée avec succès !'})
+                        M.Modal.getInstance(document.getElementById('modalCareers')).close()
+                        loadTable();
+                    },
+                    error : function(error, status, errorThrow){
+                        console.log(status + "\n" + errorThrow)
+                    }
+                })
+            }
+        }
+        
+    }
+
+    function delCareers(id) {
+        $.ajax({
+            url : "deleteCareers",
+            data : {
+                id : id
+            },
+            type : "POST",
+            dataType : "json",
+            success : function(data, status){
+                M.toast({html : 'Carrière supprimée avec succès !'})
+                loadTable();
+            },
+            error : function(error, status, errorThrow){
+                console.log(status + "\n" + errorThrow)
+            }
+        })
+    }
+
+    function delMsg(id) {
+        var elem = $('#delCareers')
+        document.getElementsByClassName('delButton')[0].setAttribute('id',id)
+        M.Modal.getInstance(elem).open()
+    }
+
+</script>
+<div class="container">
+    <div class="section">
+        <h3 style="text-align:center">Edition des carrières</h3>
+    </div>
+    <a class="wave-effect wave-light btn" href="/admin">Retour</a>
+    <table id='table'>
+    </table>
+
+    <!-- Modal modalCareers -->
+    <div id="modalCareers" class="modal">
+        <div class="modal-content">
+            <h4 id="formTitle">Classe</h4>
+            <div id='formCareers' class="input-field"></div>
+        </div>
+        <div class="modal-footer">
+            <a onclick="saveCareers(this.id)" class="wave-effect wave-green btn-flat modButton">Enregistrer</a>
+            <a href="#!" class="modal-close wave-effect wave-red btn-flat">Annuler</a>
+        </div>
+    </div>
+
+    <!-- Modal deleteCareers -->
+    <div id="delCareers" class="modal">
+        <div class="modal-content">
+            <h4>Attention !</h4>
+            <p>
+                Cette suppression est irréversible.
+                <br>
+                Voulez-vous continuer ?
+            </p>
+        </div>
+        <div class="modal-footer">
+            <a onclick="delCareers(this.id)" class="modal-close wave-effect wave-green btn-flat delButton">Oui</a>
+            <a href="#!" class="modal-close wave-effect wave-red btn-flat">Non</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

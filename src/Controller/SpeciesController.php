@@ -64,7 +64,7 @@ class SpeciesController extends AbstractController
             $desc = $request->request->get('desc');
             $specie->setDescription($desc == '' ? null : $desc);
             $rollmax = $request->request->get('rollmax');
-            $specie->setRollmax($rollmax == '' ? null : $rollmax);
+            $specie->setRollmax($rollmax == '' ? $request->request->get('rollmin') : $rollmax);
             $randomtalents = $request->request->get('randomtalents');
             $specie->setRandomtalents($randomtalents == '' ? null : $randomtalents);
             $age = $request->request->get('age');

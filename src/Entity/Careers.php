@@ -31,7 +31,7 @@ class Careers
     /**
      * @var string|null
      *
-     * @ORM\Column(name="Description", type="string", length=1000, nullable=true)
+     * @ORM\Column(name="Description", type="string", length=2047, nullable=true)
      */
     private $description;
 
@@ -48,6 +48,13 @@ class Careers
      * @ORM\Column(name="ID_Source", type="integer", nullable=true)
      */
     private $idSource;
+
+    /**
+     * @var string|null
+     * 
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $resume;
 
     public function getId(): ?int
     {
@@ -98,6 +105,18 @@ class Careers
     public function setIdSource(?int $idSource): self
     {
         $this->idSource = $idSource;
+
+        return $this;
+    }
+
+    public function getResume(): ?string
+    {
+        return $this->resume;
+    }
+
+    public function setResume(?string $resume): self
+    {
+        $this->resume = $resume;
 
         return $this;
     }

@@ -16,11 +16,13 @@ class AdminController extends AbstractController
         $linkToAV = $this->generateUrl('editAV');
         $linkToClasses = $this->generateUrl('editClasses');
         $linkToSpecies = $this->generateUrl('editSpecies');
+        $linkToCareers = $this->generateUrl('editCareers');
         return $this->render('admin/index.html.twig', [
             'linkToSource' => $linkToEdit,
             'linkToAV' => $linkToAV,
             'linkToClasses' => $linkToClasses,
-            'linkToSpecies' => $linkToSpecies
+            'linkToSpecies' => $linkToSpecies,
+            'linkToCareers' => $linkToCareers
         ]);
     }
 }

@@ -35,6 +35,16 @@ class SpecCareers
      */
     private $idCareer;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $rollmin;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $rollmax;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -60,6 +70,30 @@ class SpecCareers
     public function setIdCareer(int $idCareer): self
     {
         $this->idCareer = $idCareer;
+
+        return $this;
+    }
+
+    public function getRollmin(): ?int
+    {
+        return $this->rollmin;
+    }
+
+    public function setRollmin(int $rollmin): self
+    {
+        $this->rollmin = $rollmin;
+
+        return $this;
+    }
+
+    public function getRollmax(): ?int
+    {
+        return $this->rollmax;
+    }
+
+    public function setRollmax(int $rollmax): self
+    {
+        $this->rollmax = $rollmax;
 
         return $this;
     }
