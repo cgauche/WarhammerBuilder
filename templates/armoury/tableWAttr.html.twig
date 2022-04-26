@@ -1,0 +1,18 @@
+<tr>
+    <th>Liste des attributs de l'équipement</th>
+    <th>
+        <a class="waves-effect waves-light btn" onclick="openFormWA()"><i
+                class="material-icons">add_circle_outline</i></a>
+    </th>
+</tr>
+{% for waa in WAttrArmoury %}
+    <tr>
+        <td>{{waa['name']}}</td>
+        <td>
+            <a class="waves-effect waves-light btn" onclick="openFormWA(this.id)" id="{{waa['id']}}"><i
+                    class="material-icons">border_color</i></a>
+            <a class="waves-effect waves-light btn modal-trigger" onclick="delWA(this.id)" id="{{waa['id']}}"><i
+                    class="material-icons">delete</i></a>
+        </td>
+    </tr>
+{% endfor %}

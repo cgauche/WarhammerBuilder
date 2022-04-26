@@ -1,0 +1,21 @@
+<div class="row">
+    {% if creation %}
+    <div class="col s12 row">
+        {{form(form)}}
+        <div class="col s12" style="text-align: center;">
+            <a onclick="saveArmoury(this.id)" class="wave-effect wave-green btn-flat modButton">Enregistrer</a>
+        </div>
+    </div>
+    {% else %}
+    <div class="col s6">
+        {{form(form)}}
+        <div class="col s12" style="text-align: center;">
+            <a onclick="saveArmoury(this.id)" class="wave-effect wave-green btn-flat modButton">Enregistrer</a>
+        </div>
+    </div>
+    <div class="col s6">
+        <table id='tableWA'>
+        </table>
+    </div>
+    {% endif %}
+</div>

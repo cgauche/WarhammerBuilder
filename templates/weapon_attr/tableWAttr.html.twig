@@ -1,0 +1,24 @@
+<tr>
+        <th>Nom</th>
+        <th style="text-align:center">Avec niveau</th>
+        <th>Description</th>
+        <th>Source</th>
+        <th style="text-align:right">
+                <a class="waves-effect waves-light btn" onclick="openForm()"><i
+                        class="material-icons">add_circle_outline</i></a>
+        </th>
+</tr>
+{% for wattr in WAttrs %}
+        <tr>
+                <td>{{wattr['name']}}</td>
+                <td style="text-align:center">{{wattr['withRank']}}</td>
+                <td>{{wattr['desc']}}</td>
+                <td>{{wattr['source']}}</td>
+                <td style="text-align:right">
+                <a class="waves-effect waves-light btn" onclick="openForm(this.id)" id="{{wattr['id']}}"><i
+                        class="material-icons">border_color</i></a>
+                <a class="waves-effect waves-light btn modal-trigger" onclick="delMsg(this.id)" id="{{wattr['id']}}"><i
+                        class="material-icons">delete</i></a>
+                </td>
+        </tr>
+{% endfor %}

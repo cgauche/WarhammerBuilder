@@ -1,0 +1,368 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edition des équipements{% endblock %}
+
+{% block body %}
+<!-- Override graphic framework, do some shit on select input -->
+<style>
+    select {
+        display: flex;
+    }
+</style>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var elems = document.querySelectorAll('.modal');
+        M.Modal.init(elems, { dismissible: false });
+    });
+
+    window.onload = loadTable;
+    function loadTable() {
+        $.ajax({
+            url: "readAllArmoury",
+            type: "POST",
+            dataType: "html",
+            success: function (data, status) {
+                if ($('#table').length == 0) {
+                    $('#main').append("<table id='table'></table>")
+                }
+                $('#table').html(data)
+            },
+            error: function (error, status, errorThrow) {
+                console.log(status + "\n" + errorThrow)
+            }
+        })
+    }
+
+    function openForm(id = '') {
+        $.ajax({
+            url: "readArmoury",
+            data: {
+                id: id
+            },
+            type: "POST",
+            dataType: "html",
+            success: function (data, status) {
+                $('#main').html(data)
+                $('#back').attr('href', '').attr('onclick', 'loadTable()')
+                loadTableWA(id);
+            },
+            error: function (error, status, errorThrow) {
+                console.log(status + "\n" + errorThrow)
+            },
+            complete: function () {
+                document.getElementsByClassName('modButton')[0].setAttribute('id', id)
+            }
+        })
+    }
+
+    function saveArmoury(id) {
+        var name = document.getElementById("armoury_name").value
+        var type = document.getElementById("armoury_type").value
+        var clutter = document.getElementById("armoury_clutter").value
+
+        var group = document.getElementById('armoury_group').value
+        var price = document.getElementById('armoury_price').value
+        var availability = document.getElementById('armoury_availability').value
+        var range = document.getElementById('armoury_range').value
+        var damage = document.getElementById('armoury_damage').value
+        var penalty = document.getElementById('armoury_penalty').value
+        var location = document.getElementById('armoury_location').value
+        var pa = document.getElementById('armoury_pa').value
+        var desc = document.getElementById("armoury_description").value
+        var idSource = document.getElementById("armoury_idSource").value
+
+        if (name == '') {
+            M.toast({ html: 'Veuillez saisir un nom pour l\'équipement.', classes: 'red lighten-1' })
+        } else if (type == '') {
+            M.toast({ html: 'Veuillez saisir un type pour l\'équipement.', classes: 'red lighten-1' })
+        } else if (clutter == '') {
+            M.toast({ html: 'Veuillez saisir un encombrement pour l\'équipement.', classes: 'red lighten-1' })
+        } else {
+            if (id != '') {
+                $.ajax({
+                    url: "updateArmoury",
+                    data: {
+                        id: id,
+                        name: name,
+                        type: type,
+                        clutter: clutter,
+                        group: group,
+                        price: price,
+                        availability: availability,
+                        range: range,
+                        damage: damage,
+                        penalty: penalty,
+                        location: location,
+                        pa: pa,
+                        desc: desc,
+                        idSource: idSource
+                    },
+                    type: "POST",
+                    dataType: "json",
+                    success: function (data, status) {
+                        M.toast({ html: 'Équipement modifié avec succès !' })
+                        M.Modal.getInstance(document.getElementById('modalArmoury')).close()
+                        loadTable();
+                    },
+                    error: function (error, status, errorThrow) {
+                        console.log(status + "\n" + errorThrow)
+                    }
+                })
+            } else {
+                $.ajax({
+                    url: "createArmoury",
+                    data: {
+                        name: name,
+                        type: type,
+                        clutter: clutter,
+                        group: group,
+                        price: price,
+                        availability: availability,
+                        range: range,
+                        damage: damage,
+                        penalty: penalty,
+                        location: location,
+                        pa: pa,
+                        desc: desc,
+                        idSource: idSource
+                    },
+                    type: "POST",
+                    dataType: "json",
+                    success: function (data, status) {
+                        M.toast({ html: 'Équipement créé avec succès !' })
+                        M.Modal.getInstance(document.getElementById('modalArmoury')).close()
+                        loadTable();
+                    },
+                    error: function (error, status, errorThrow) {
+                        console.log(status + "\n" + errorThrow)
+                    }
+                })
+            }
+        }
+
+    }
+
+    function delArmoury(id) {
+        $.ajax({
+            url: "deleteArmoury",
+            data: {
+                id: id
+            },
+            type: "POST",
+            dataType: "json",
+            success: function (data, status) {
+                M.toast({ html: 'Équipement supprimé avec succès !' })
+                loadTable();
+            },
+            error: function (error, status, errorThrow) {
+                console.log(status + "\n" + errorThrow)
+            }
+        })
+    }
+
+    function delMsg(id) {
+        var elem = $('#delArmoury')
+        document.getElementsByClassName('delButton')[0].setAttribute('id', id)
+        M.Modal.getInstance(elem).open()
+    }
+
+    /*************************************************************
+    * GESTION DES ATTRIBUTS DES EQUIPPEMENT (WEAPONATTR)
+    *************************************************************/
+
+    function loadTableWA(id) {
+        $.ajax({
+            url: "readAllWAArmoury",
+            data: {
+                id: id
+            },
+            type: "POST",
+            dataType: "html",
+            success: function (data, status) {
+                $("#tableWA").html(data)
+            },
+            error: function (error, status, errorThrow) {
+                console.log(status + "\n" + errorThrow)
+            }
+        })
+    }
+
+    function saveWA(id = '') {
+        var idWAttr = document.getElementById("WAttr").value
+        var rankVisible = document.getElementById("rank").getAttribute('hidden')
+        var rank = document.getElementById("rankInput").value
+        var idArmoury = document.getElementsByClassName('modButton')[0].getAttribute('id')
+
+        if (idWAttr == '') {
+            M.toast({ html: 'Veuillez sélectionner un attribut pour l\'équipement.', classes: 'red lighten-1' })
+        } else if (!rankVisible && rank == '') {
+            M.toast({ html: 'Veuillez sasir un niveau d\'attribut pour l\'équipement.', classes: 'red lighten-1' })
+        } else {
+            if (id != '') {
+                $.ajax({
+                    url: "updateWAArmoury",
+                    data: {
+                        id: id,
+                        idWAttr: idWAttr,
+                        rank: rank
+                    },
+                    type: "POST",
+                    dataType: "json",
+                    success: function (data, status) {
+                        M.toast({ html: 'Attribut modifié avec succès !' })
+                        M.Modal.getInstance(document.getElementById('modalWA')).close()
+                        loadTableWA(idArmoury);
+                    },
+                    error: function (error, status, errorThrow) {
+                        console.log(status + "\n" + errorThrow)
+                    }
+                })
+            } else {
+                $.ajax({
+                    url: "createWAArmoury",
+                    data: {
+                        idArmoury: idArmoury,
+                        idWAttr: idWAttr,
+                        rank: rank
+                    },
+                    type: "POST",
+                    dataType: "json",
+                    success: function (data, status) {
+                        M.toast({ html: 'Attribut créé avec succès !' })
+                        M.Modal.getInstance(document.getElementById('modalWA')).close()
+                        loadTableWA(idArmoury);
+                    },
+                    error: function (error, status, errorThrow) {
+                        console.log(status + "\n" + errorThrow)
+                    }
+                })
+            }
+        }
+    }
+
+    function rankNeeded(id) {
+        $.ajax({
+            url: "haveRank",
+            data: {
+                id: id
+            },
+            type: "POST",
+            dataType: "json",
+            success: function (data, status) {
+                if (data['result']) {
+                    $('#rank').removeAttr("hidden")
+                } else {
+                    $('#rank').attr("hidden", true)
+                    $('#rankInput').val('')
+                }
+            },
+            error: function (error, status, errorThrow) {
+                $('#rank').attr("hidden", false)
+                console.log(status + "\n" + errorThrow)
+            }
+        })
+    }
+
+    function openFormWA(id = '') {
+        $.ajax({
+            url: "readWAArmoury",
+            data: {
+                id: id
+            },
+            type: "POST",
+            dataType: "JSON",
+            success: function (data, status) {
+                $('#WAttr').val(data['id'])
+                if (data['withRank']) {
+                    $('#rank').removeAttr("hidden");
+                    $('#rankInput').val(data['rank']);
+                }else{
+                    $('#rank').attr("hidden", true);
+                }
+            },
+            error: function (error, status, errorThrow) {
+                console.log(status + "\n" + errorThrow)
+            },
+            complete: function () {
+                var elem = $('#modalWA')
+                document.getElementsByClassName('modButtonWA')[0].setAttribute('id', id)
+                M.Modal.getInstance(elem).open()
+            }
+        })
+    }
+
+    function delWA(id) {
+        $.ajax({
+            url: "deleteWAArmoury",
+            data: {
+                id: id
+            },
+            type: "POST",
+            dataType: "json",
+            success: function (data, status) {
+                M.toast({ html: 'Attribut supprimé avec succès !' })
+                loadTableWA(document.getElementsByClassName('modButton')[0].getAttribute('id'));
+            },
+            error: function (error, status, errorThrow) {
+                console.log(status + "\n" + errorThrow)
+            }
+        })
+    }
+</script>
+
+
+<!--------------------------------------- HTML ------------------------------------>
+
+<div class="container">
+    <div class="section">
+        <h3 style="text-align:center">Edition des équipements</h3>
+    </div>
+    <a class="wave-effect wave-light btn" id='back' href="/admin">Retour</a>
+    <div id='main'>
+    </div>
+
+    <!-- Modal deleteArmoury -->
+    <div id="delArmoury" class="modal">
+        <div class="modal-content">
+            <h4>Attention !</h4>
+            <p>
+                Cette suppression est irréversible.
+                <br>
+                Voulez-vous continuer ?
+            </p>
+        </div>
+        <div class="modal-footer">
+            <a onclick="delArmoury(this.id)" class="modal-close wave-effect wave-green btn-flat delButton">Oui</a>
+            <a href="#!" class="modal-close wave-effect wave-red btn-flat">Non</a>
+        </div>
+    </div>
+
+    <!-- Modal modalWA -->
+    <div id="modalWA" class="modal">
+        <div class="modal-content">
+            <h4 id="formTitle">Attribut</h4>
+            <div id='formWA' class="input-field">
+                <div>
+                    <label class="required">Attribut</label>
+                    <select name="WAttr" id="WAttr" onchange="rankNeeded(this.value)" required>
+                        <option value="" selected>Sélectionner un attribut...</option>
+                        {% for wa in WAttr %}
+                        <option value="{{wa.id}}">{{wa.name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div id="rank" hidden>
+                    <label class="required">Niveau</label>
+                    <input type="number" name="Niveau" id="rankInput" />
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a onclick="saveWA(this.id)" class="wave-effect wave-green btn-flat modButtonWA">Enregistrer</a>
+            <a href="#!" class="modal-close wave-effect wave-red btn-flat">Annuler</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
