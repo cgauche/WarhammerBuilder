@@ -5,12 +5,12 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Caracteristics
+ * Characteristics
  *
- * @ORM\Table(name="caracteristics")
+ * @ORM\Table(name="characteristics")
  * @ORM\Entity
  */
-class Caracteristics
+class Characteristics
 {
     /**
      * @var int
@@ -24,7 +24,7 @@ class Caracteristics
     /**
      * @var string|null
      *
-     * @ORM\Column(name="Name", type="string", length=10, nullable=true)
+     * @ORM\Column(name="Name", type="string", length=50, nullable=true)
      */
     private $name;
 
@@ -41,13 +41,6 @@ class Caracteristics
      * @ORM\Column(name="Description", type="string", length=1000, nullable=true)
      */
     private $description;
-
-    /**
-     * @var int|null
-     *
-     * @ORM\Column(name="Value", type="integer", nullable=true)
-     */
-    private $value;
 
     public function getId(): ?int
     {
@@ -89,18 +82,4 @@ class Caracteristics
 
         return $this;
     }
-
-    public function getValue(): ?int
-    {
-        return $this->value;
-    }
-
-    public function setValue(?int $value): self
-    {
-        $this->value = $value;
-
-        return $this;
-    }
-
-
 }

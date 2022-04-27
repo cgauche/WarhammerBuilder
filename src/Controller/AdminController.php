@@ -13,6 +13,7 @@ class AdminController extends AbstractController
     public function index(): Response
     {
         $linkToEdit = $this->generateUrl('editSource');
+        $linkToCharac = $this->generateUrl('editCharac');
         $linkToAV = $this->generateUrl('editAV');
         $linkToClasses = $this->generateUrl('editClasses');
         $linkToSpecies = $this->generateUrl('editSpecies');
@@ -23,6 +24,7 @@ class AdminController extends AbstractController
         $linkToSpellFamily = $this->generateUrl('editSpellFamily');
         return $this->render('admin/index.html.twig', [
             'linkToSource' => $linkToEdit,
+            'linkToCharac' => $linkToCharac,
             'linkToAV' => $linkToAV,
             'linkToClasses' => $linkToClasses,
             'linkToSpecies' => $linkToSpecies,
