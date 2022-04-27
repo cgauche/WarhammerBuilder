@@ -15,6 +15,7 @@ class AdminController extends AbstractController
         $linkToEdit = $this->generateUrl('editSource');
         $linkToCharac = $this->generateUrl('editCharac');
         $linkToAV = $this->generateUrl('editAV');
+        $linkToBC = $this->generateUrl('editBC');
         $linkToClasses = $this->generateUrl('editClasses');
         $linkToSpecies = $this->generateUrl('editSpecies');
         $linkToCareers = $this->generateUrl('editCareers');
@@ -26,6 +27,7 @@ class AdminController extends AbstractController
             'linkToSource' => $linkToEdit,
             'linkToCharac' => $linkToCharac,
             'linkToAV' => $linkToAV,
+            'linkToBC' => $linkToBC,
             'linkToClasses' => $linkToClasses,
             'linkToSpecies' => $linkToSpecies,
             'linkToCareers' => $linkToCareers,
