@@ -12,6 +12,8 @@ use App\Form\SpeciesType;
 use App\Entity\Species;
 use App\Entity\Source;
 use App\Entity\CharacSpecies;
+use App\Entity\CareersSpecies;
+use App\Entity\Careers;
 use App\Entity\Characteristics;
 
 class SpeciesController extends AbstractController
@@ -199,7 +201,61 @@ class SpeciesController extends AbstractController
 
         $entityManager->flush();
         return new JSONResponse(['result' => "OK"]);
-
-        //return new JSONResponse(['data' => json_decode($request->request->get('data'))]);
     }
+
+    /*************************************************************
+    * GESTION DES CARRIERES ACCESSIBLES (CareersSpecies)
+    *************************************************************/
+
+    #[Route('/admin/readAccesCareers', name : 'readAccesCareers', methods : ['POST'])]
+    public function readAccesCareers(ManagerRegistry $doctrine, Request $request){
+        $careers = $doctrine->getRepository(Careers::class)->findAll();
+        $result = [];
+        foreach ($careers as $c) {
+            $idSPC = null;
+            $value = false;
+
+            $spc = $doctrine->getRepository(CareersSpecies::class)->findOneBy([
+                'idSpecies' => $request->request->get('id'),
+                'idCareers' => $c->getId()
+            ]);
+            if($spc != null){
+                $idSPC = $spc->getId();
+                $value = true;
+            }
+
+            $result[] = [
+                'id' => $idSPC == null ? "-" . $c->getId() : $idSPC,
+                'name' => $c->getName(),
+                'value' => $value
+            ];
+        }
+
+        return new Response($this->renderView('Species/tableSpeciesCareers.html.twig',['careers' => $result]));
+    }
+
+    #[Route('/admin/saveAccesCareers', name : 'saveAccesCareers', methods : ['POST'])]
+    public function saveAccesCareers(ManagerRegistry $doctrine, Request $request){
+        $entityManager = $doctrine->getManager();
+        $data = json_decode($request->request->get('data'),true);
+        
+        foreach ($data as $d) {
+            if($d['value']){
+                if($d['ID'] <= 0){
+                    $spc = new CareersSpecies();
+                    $spc->setIdCareers(abs($d['ID']));
+                    $spc->setIdSpecies($request->request->get('id'));
+                    $entityManager->persist($spc);
+                }
+            }else{
+                $spc = $doctrine->getRepository(CareersSpecies::class)->find($d['ID']);
+                if($spc != null)
+                    $entityManager->remove($spc);
+            }
+        }
+
+        $entityManager->flush();
+        return new JSONResponse(['result' => "OK"]);
+    }
+
 }

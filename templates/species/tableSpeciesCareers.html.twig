@@ -1,0 +1,26 @@
+<tr>
+        <th class="unvisible"></th>
+        <th>Nom</th>
+        <th>Accessible ?</th>
+</tr>
+{% for career in careers %}
+<tr>
+        <td class="unvisible" id="characID">{{career['id']}}</td>
+        <td>{{career['name']}}</td>
+        <td>
+                <div class="switch">
+                        <label>
+                                Non
+                                {% if career['value'] %}
+                                <input type="checkbox" checked>
+                                {% else %}
+                                <input type="checkbox">
+                                {% endif %}
+                                <span class="lever"></span>
+                                Oui
+                        </label>
+                </div>
+        </td>
+
+</tr>
+{% endfor %}

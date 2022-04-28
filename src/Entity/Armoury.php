@@ -113,9 +113,9 @@ class Armoury
     private $description;
 
     /**
-     * @var int
+     * @var int|null
      *
-     * @ORM\Column(name="ID_Source", type="integer", nullable=false)
+     * @ORM\Column(name="ID_Source", type="integer", nullable=true)
      */
     private $idSource;
 
