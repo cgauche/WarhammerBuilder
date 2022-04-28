@@ -11,6 +11,8 @@ use Doctrine\Persistence\ManagerRegistry;
 use App\Form\SpeciesType;
 use App\Entity\Species;
 use App\Entity\Source;
+use App\Entity\CharacSpecies;
+use App\Entity\Characteristics;
 
 class SpeciesController extends AbstractController
 {
@@ -142,5 +144,62 @@ class SpeciesController extends AbstractController
         $entityManager->remove($specie);
         $entityManager->flush(); 
         return new JSONResponse(['result' => "OK"]);
+    }
+
+    /*************************************************************
+    * GESTION DES CARACTERISTIQUES DE BASE (CharacSpecies)
+    *************************************************************/
+
+    #[Route('/admin/readBaseCharac', name : 'readBaseCharac', methods : ['POST'])]
+    public function readBaseCharac(ManagerRegistry $doctrine, Request $request){
+        $characs = $doctrine->getRepository(Characteristics::class)->findAll();
+        $result = [];
+        foreach ($characs as $c) {
+            $idSPC = null;
+            $base = null;
+            $roll = null ;
+
+            $spc = $doctrine->getRepository(CharacSpecies::class)->findOneBy([
+                'idSpecies' => $request->request->get('id'),
+                'idCharac' => $c->getId()
+            ]);
+            if($spc != null){
+                $idSPC = $spc->getId();
+                $base = $spc->getBase();
+                $roll = $spc->getNbRoll();
+            }
+
+            $result[] = [
+                'id' => $idSPC == null ? "-" . $c->getId() : $idSPC,
+                'name' => $c->getName(),
+                'base' => $base,
+                'nbRoll' => $roll
+            ];
+        }
+
+        return new Response($this->renderView('Species/tableSpeciesCharac.html.twig',['characs' => $result]));
+    }
+
+    #[Route('/admin/saveBaseCharac', name : 'saveBaseCharac', methods : ['POST'])]
+    public function saveBaseCharac(ManagerRegistry $doctrine, Request $request){
+        $entityManager = $doctrine->getManager();
+        $data = json_decode($request->request->get('data'),true);
+        
+        foreach ($data as $d) {
+            $spc = $doctrine->getRepository(CharacSpecies::class)->find($d['ID']);
+            if($spc == null){
+                $spc = new CharacSpecies();
+                $spc->setIdCharac(abs($d['ID']));
+                $spc->setIdSpecies($request->request->get('id'));
+            }
+            $spc->setBase($d['base']);
+            $spc->setNbRoll($d['roll']);
+            $entityManager->persist($spc);
+        }
+
+        $entityManager->flush();
+        return new JSONResponse(['result' => "OK"]);
+
+        //return new JSONResponse(['data' => json_decode($request->request->get('data'))]);
     }
 }

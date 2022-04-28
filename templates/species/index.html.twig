@@ -56,6 +56,57 @@
         })
     }
 
+    function openCharac(id = '') {
+        $.ajax({
+            url : "readBaseCharac",
+            data : {
+                id : id
+            },
+            type : "POST",
+            dataType : "html",
+            success : function(data, status){
+                $("#tableCharacs").html(data);
+            },
+            error : function(error, status, errorThrow){
+                console.log(status + "\n" + errorThrow)
+            },
+            complete : function (){
+                var elem = document.getElementById('modalCharacs')
+                document.getElementsByClassName('modButtonCharacs')[0].setAttribute('id',id)
+                M.Modal.getInstance(elem).open()
+            }
+        })
+    }
+
+    function saveCharacs(id = ''){
+        var tableRow = document.getElementById("tableCharacs").getElementsByTagName('tr')
+        var data = {}
+        for(var i = 1; i < tableRow.length; i++){
+            data[i] = {}
+            data[i]['ID'] = tableRow[i].getElementsByTagName("td")[0].textContent //IDLine
+            data[i]['base'] = tableRow[i].getElementsByTagName("td")[2].getElementsByTagName("input")[0].value //Base
+            data[i]['roll'] = tableRow[i].getElementsByTagName("td")[3].getElementsByTagName("input")[0].value //Roll
+        }
+        
+        $.ajax({
+            url : "saveBaseCharac",
+            data :{
+                id : id,
+                data : JSON.stringify(data)
+            },
+            type : "POST",
+            dataType : "json",
+            success : function(data, status){
+                console.log(data)
+                M.toast({html : 'Caractéristiques enregistrées avec succès !'})
+                M.Modal.getInstance(document.getElementById('modalCharacs')).close()
+            },
+            error : function(error, status, errorThrow){
+                console.log(status + "\n" + errorThrow)
+            }
+        })
+    }
+
     function saveSpecies(id) {
         var name = document.getElementById("species_name").value
         var desc = document.getElementById("species_description").value
@@ -187,6 +238,20 @@
         </div>
         <div class="modal-footer">
             <a onclick="saveSpecies(this.id)" class="wave-effect wave-green btn-flat modButton">Enregistrer</a>
+            <a href="#!" class="modal-close wave-effect wave-red btn-flat">Annuler</a>
+        </div>
+    </div>
+
+    <!-- Modal modalCharacs -->
+    <div id="modalCharacs" class="modal">
+        <div class="modal-content">
+            <h4 id="titleCharac">Caractéristiques de base de la race</h4>
+            <div class="input-field row">
+                <table id="tableCharacs"></table>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a onclick="saveCharacs(this.id)" class="wave-effect wave-green btn-flat modButtonCharacs">Enregistrer</a>
             <a href="#!" class="modal-close wave-effect wave-red btn-flat">Annuler</a>
         </div>
     </div>
