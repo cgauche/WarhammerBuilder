@@ -37,7 +37,7 @@ class SpellsController extends AbstractController
             $type = $s->getType();
             if($s->getIdSource() != null){
                 $sf = $doctrine->getRepository(SpellFamily::class)->find($s->getIdSpellFamily());
-                if($source != null){
+                if($sf != null){
                     $type = $sf->getName() . ($type != '' ? ' ('. $type .')' : '');
                 }
             }

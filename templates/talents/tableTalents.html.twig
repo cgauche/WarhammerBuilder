@@ -1,0 +1,26 @@
+<tr>
+        <th>Nom</th>
+        <th>Niveau max</th>
+        <th>Test</th>
+        <th>Jet pour l'aléatoire</th>
+        <th>Source</th>
+        <th style="text-align:right">
+                <a class="waves-effect waves-light btn" onclick="openForm()"><i
+                        class="material-icons">add_circle_outline</i></a>
+        </th>
+</tr>
+{% for talent in Talents %}
+        <tr>
+                <td>{{talent['name']}}</td>
+                <td>{{talent['max']}}</td>
+                <td>{{talent['test']}}</td>
+                <td>{{talent['aleat']}}</td>
+                <td>{{talent['source']}}</td>
+                <td style="text-align:right; width: 125px;">
+                <a class="waves-effect waves-light btn" onclick="openForm(this.id)" id="{{talent['id']}}"><i
+                        class="material-icons">border_color</i></a>
+                <a class="waves-effect waves-light btn modal-trigger" onclick="delMsg(this.id)" id="{{talent['id']}}"><i
+                        class="material-icons">delete</i></a>
+                </td>
+        </tr>
+{% endfor %}

@@ -43,11 +43,11 @@ class Skills
     private $description;
 
     /**
-     * @var bool
+     * @var string|null
      *
-     * @ORM\Column(name="Specs", type="boolean", nullable=false)
+     * @ORM\Column(name="Specs", type="string", nullable=true)
      */
-    private $specs = '0';
+    private $specs;
 
     /**
      * @var int|null
@@ -104,12 +104,12 @@ class Skills
         return $this;
     }
 
-    public function getSpecs(): ?bool
+    public function getSpecs(): ?string
     {
         return $this->specs;
     }
 
-    public function setSpecs(bool $specs): self
+    public function setSpecs(?string $specs): self
     {
         $this->specs = $specs;
 

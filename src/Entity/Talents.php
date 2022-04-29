@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Talents
  *
- * @ORM\Table(name="talents", indexes={@ORM\Index(name="FK_TALENT_SKILL", columns={"ID_Skill"}), @ORM\Index(name="FK_TALENT_SOURCE", columns={"ID_Source"}), @ORM\Index(name="FK_TALENT_CARAC", columns={"ID_Caracteristics"})})
+ * @ORM\Table(name="talents", indexes={@ORM\Index(name="FK_TALENT_SOURCE", columns={"ID_Source"})})
  * @ORM\Entity
  */
 class Talents
@@ -24,7 +24,7 @@ class Talents
     /**
      * @var string|null
      *
-     * @ORM\Column(name="Name", type="string", length=20, nullable=true)
+     * @ORM\Column(name="Name", type="string", length=50, nullable=true)
      */
     private $name;
 
@@ -38,23 +38,29 @@ class Talents
     /**
      * @var int|null
      *
-     * @ORM\Column(name="ID_Skill", type="integer", nullable=true)
-     */
-    private $idSkill;
-
-    /**
-     * @var int|null
-     *
-     * @ORM\Column(name="ID_Caracteristics", type="integer", nullable=true)
-     */
-    private $idCaracteristics;
-
-    /**
-     * @var int|null
-     *
      * @ORM\Column(name="ID_Source", type="integer", nullable=true)
      */
     private $idSource;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $minRoll;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $maxRoll;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $Max;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $Test;
 
     public function getId(): ?int
     {
@@ -85,30 +91,6 @@ class Talents
         return $this;
     }
 
-    public function getIdSkill(): ?int
-    {
-        return $this->idSkill;
-    }
-
-    public function setIdSkill(?int $idSkill): self
-    {
-        $this->idSkill = $idSkill;
-
-        return $this;
-    }
-
-    public function getIdCaracteristics(): ?int
-    {
-        return $this->idCaracteristics;
-    }
-
-    public function setIdCaracteristics(?int $idCaracteristics): self
-    {
-        $this->idCaracteristics = $idCaracteristics;
-
-        return $this;
-    }
-
     public function getIdSource(): ?int
     {
         return $this->idSource;
@@ -117,6 +99,54 @@ class Talents
     public function setIdSource(?int $idSource): self
     {
         $this->idSource = $idSource;
+
+        return $this;
+    }
+
+    public function getMinRoll(): ?int
+    {
+        return $this->minRoll;
+    }
+
+    public function setMinRoll(?int $minRoll): self
+    {
+        $this->minRoll = $minRoll;
+
+        return $this;
+    }
+
+    public function getMaxRoll(): ?int
+    {
+        return $this->maxRoll;
+    }
+
+    public function setMaxRoll(?int $maxRoll): self
+    {
+        $this->maxRoll = $maxRoll;
+
+        return $this;
+    }
+
+    public function getMax(): ?string
+    {
+        return $this->Max;
+    }
+
+    public function setMax(?string $Max): self
+    {
+        $this->Max = $Max;
+
+        return $this;
+    }
+
+    public function getTest(): ?string
+    {
+        return $this->Test;
+    }
+
+    public function setTest(?string $Test): self
+    {
+        $this->Test = $Test;
 
         return $this;
     }

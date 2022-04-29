@@ -17,6 +17,8 @@ class AdminController extends AbstractController
         $linkToAV = $this->generateUrl('editAV');
         $linkToBC = $this->generateUrl('editBC');
         $linkToClasses = $this->generateUrl('editClasses');
+        $linkToTalents = $this->generateUrl('editTalents');
+        $linkToSkills = $this->generateUrl('editSkills');
         $linkToSpecies = $this->generateUrl('editSpecies');
         $linkToCareers = $this->generateUrl('editCareers');
         $linkToWAttr = $this->generateUrl('editWAttr');
@@ -34,7 +36,9 @@ class AdminController extends AbstractController
             'linkToWAttr' => $linkToWAttr,
             'linkToArmoury' => $linkToArmoury,
             'linkToSpells' => $linkToSpells,
-            'linkToSpellFamily' => $linkToSpellFamily
+            'linkToSpellFamily' => $linkToSpellFamily,
+            'linkToTalents' => $linkToTalents,
+            'linkToSkills' => $linkToSkills
         ]);
     }
 }
