@@ -4,9 +4,15 @@
 
 {% block body %}
 <div class="container">
-    <h2 style="text-align : center;">Administration WFRP4VF</h2>
+    <div class="row" style="text-align : center;">
+        <h2 class='col s11'>Administration WFRP4VF</h2>
+        <a style="margin-top : 50px" class="waves-effect waves-light btn col s1" href="{{path('logout')}}"><i class="material-icons">power_settings_new</i></a>
+    </div>
     <div class="section">
+        <a class="waves-effect waves-light btn" href="{{linkToUser}}">Edition des utilisateurs</a>
         <a class="waves-effect waves-light btn" href="{{linkToSource}}">Edition des sources</a>
+    </div>
+    <div class="section">
         <a class="waves-effect waves-light btn" href="{{linkToCharac}}">Edition des caractéristiques</a>
         <a class="waves-effect waves-light btn" href="{{linkToSkills}}">Edition des compétences</a>
         <a class="waves-effect waves-light btn" href="{{linkToTalents}}">Edition des talents</a>

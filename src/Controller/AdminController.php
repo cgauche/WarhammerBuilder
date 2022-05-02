@@ -6,13 +6,15 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class AdminController extends AbstractController
 {
-    #[Route('/admin', name: 'admin')]
-    public function index(): Response
+    #[Route('/admin/home', name: 'homeAdmin')]
+    public function homeAdmin(): Response
     {
-        $linkToEdit = $this->generateUrl('editSource');
+        $linkToSource = $this->generateUrl('editSource');
+        $linkToUser = $this->generateUrl('editUser');
         $linkToCharac = $this->generateUrl('editCharac');
         $linkToAV = $this->generateUrl('editAV');
         $linkToBC = $this->generateUrl('editBC');
@@ -26,7 +28,8 @@ class AdminController extends AbstractController
         $linkToSpells = $this->generateUrl('editSpells');
         $linkToSpellFamily = $this->generateUrl('editSpellFamily');
         return $this->render('admin/index.html.twig', [
-            'linkToSource' => $linkToEdit,
+            'linkToSource' => $linkToSource,
+            'linkToUser' => $linkToUser,
             'linkToCharac' => $linkToCharac,
             'linkToAV' => $linkToAV,
             'linkToBC' => $linkToBC,
@@ -40,5 +43,24 @@ class AdminController extends AbstractController
             'linkToTalents' => $linkToTalents,
             'linkToSkills' => $linkToSkills
         ]);
+    }
+    
+    #[Route('/login', name: 'login')]
+    public function index(AuthenticationUtils $authenticationUtils): Response
+    {
+        $error = $authenticationUtils->getLastAuthenticationError();
+        
+        // last username entered by the user
+        $lastUsername = $authenticationUtils->getLastUsername();
+        
+        return $this->render('admin/login.html.twig', [
+            'last_username' => $lastUsername,
+            'error'         => $error
+        ]);
+    }
+    
+    #[Route('/logout', name: 'logout')]
+    public function logout(){
+
     }
 }
