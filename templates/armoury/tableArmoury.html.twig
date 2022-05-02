@@ -1,0 +1,36 @@
+<tr>
+        <th>Nom</th>
+        <th>Type</th>
+        <th>Groupe</th>
+        <th>Prix</th>
+        <th>Encombrement</th>
+        <th>Disponibilité</th>
+        <th>Portée</th>
+        <th>Dégat</th>
+        <th>PA</th>
+        <th>Source</th>
+        <th style="text-align:right">
+                <a class="waves-effect waves-light btn" onclick="openForm()"><i
+                        class="material-icons">add_circle_outline</i></a>
+        </th>
+</tr>
+{% for item in armoury %}
+        <tr>
+                <td>{{item['name']}}</td>
+                <td>{{item['type']}}</td>
+                <td>{{item['group']}}</td>
+                <td>{{item['price']}}</td>
+                <td>{{item['clutter']}}</td>
+                <td>{{item['availability']}}</td>
+                <td>{{item['range']}}</td>
+                <td>{{item['damage']}}</td>
+                <td>{{item['pa']}}</td>
+                <td>{{item['source']}}</td>
+                <td style="text-align:right">
+                <a class="waves-effect waves-light btn" onclick="openForm(this.id)" id="{{item['id']}}"><i
+                        class="material-icons">border_color</i></a>
+                <a class="waves-effect waves-light btn modal-trigger" onclick="delMsg(this.id)" id="{{item['id']}}"><i
+                        class="material-icons">delete</i></a>
+                </td>
+        </tr>
+{% endfor %}

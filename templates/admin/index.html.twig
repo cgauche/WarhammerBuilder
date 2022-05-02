@@ -3,10 +3,34 @@
 {% block title %}Admin test{% endblock %}
 
 {% block body %}
-    <div class="container">
-        <h1 style="text-align : center;">Administration WFRP4VF</h1>
-        <div>
-            <a class="waves-effect waves-light btn" href="{{linkToEdit}}">testing</a>
-        </div>
+<div class="container">
+    <div class="row" style="text-align : center;">
+        <h2 class='col s11'>Administration WFRP4VF</h2>
+        <a style="margin-top : 50px" class="waves-effect waves-light btn col s1" href="{{path('logout')}}"><i class="material-icons">power_settings_new</i></a>
     </div>
+    <div class="section">
+        <a class="waves-effect waves-light btn" href="{{linkToUser}}">Edition des utilisateurs</a>
+        <a class="waves-effect waves-light btn" href="{{linkToSource}}">Edition des sources</a>
+    </div>
+    <div class="section">
+        <a class="waves-effect waves-light btn" href="{{linkToCharac}}">Edition des caractéristiques</a>
+        <a class="waves-effect waves-light btn" href="{{linkToSkills}}">Edition des compétences</a>
+        <a class="waves-effect waves-light btn" href="{{linkToTalents}}">Edition des talents</a>
+    </div>
+    <div class="section">
+        <a class="waves-effect waves-light btn" href="{{linkToSpecies}}">Edition des races</a>
+        <a class="waves-effect waves-light btn" href="{{linkToClasses}}">Edition des classes</a>
+        <a class="waves-effect waves-light btn" href="{{linkToCareers}}">Edition des carrières</a>
+    </div>
+    <div class="section">
+        <a class="waves-effect waves-light btn" href="{{linkToArmoury}}">Edition des équipements</a>
+        <a class="waves-effect waves-light btn" href="{{linkToWAttr}}">Edition des attributs des équipements</a>
+        <a class="waves-effect waves-light btn" href="{{linkToAV}}">Edition des véhicules</a>
+        <a class="waves-effect waves-light btn" href="{{linkToBC}}">Edition des sacs</a>
+    </div>
+    <div class="section">
+        <a class="waves-effect waves-light btn" href="{{linkToSpells}}">Edition des sorts</a>
+        <a class="waves-effect waves-light btn" href="{{linkToSpellFamily}}">Edition des familles de sort</a>
+    </div>
+</div>
 {% endblock %}

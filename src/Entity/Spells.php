@@ -31,7 +31,7 @@ class Spells
     /**
      * @var string|null
      *
-     * @ORM\Column(name="Type", type="string", length=20, nullable=true, options={"comment"="Bénédiction, Miracle, Sortilège"})
+     * @ORM\Column(name="TypeSpell", type="string", length=20, nullable=true, options={"comment"="Bénédiction, Miracle, Sortilège"})
      */
     private $type;
 
@@ -45,21 +45,21 @@ class Spells
     /**
      * @var string|null
      *
-     * @ORM\Column(name="Range", type="string", length=10, nullable=true)
+     * @ORM\Column(name="RangeSpell", type="string", length=10, nullable=true)
      */
-    private $range;
+    private $rangeSpell;
 
     /**
      * @var string|null
      *
-     * @ORM\Column(name="Target", type="string", length=10, nullable=true)
+     * @ORM\Column(name="TargetSpell", type="string", length=10, nullable=true)
      */
     private $target;
 
     /**
      * @var string|null
      *
-     * @ORM\Column(name="Length", type="string", length=10, nullable=true)
+     * @ORM\Column(name="LengthSpell", type="string", length=10, nullable=true)
      */
     private $length;
 
@@ -82,7 +82,7 @@ class Spells
      *
      * @ORM\Column(name="ID_Spell_type", type="integer", nullable=true)
      */
-    private $idSpellType;
+    private $idSpellFamily;
 
     /**
      * @var int|null
@@ -134,12 +134,12 @@ class Spells
 
     public function getRange(): ?string
     {
-        return $this->range;
+        return $this->rangeSpell;
     }
 
     public function setRange(?string $range): self
     {
-        $this->range = $range;
+        $this->rangeSpell = $range;
 
         return $this;
     }
@@ -192,14 +192,14 @@ class Spells
         return $this;
     }
 
-    public function getIdSpellType(): ?int
+    public function getIdSpellFamily(): ?int
     {
-        return $this->idSpellType;
+        return $this->idSpellFamily;
     }
 
-    public function setIdSpellType(?int $idSpellType): self
+    public function setIdSpellFamily(?int $idSpellFamily): self
     {
-        $this->idSpellType = $idSpellType;
+        $this->idSpellFamily = $idSpellFamily;
 
         return $this;
     }
@@ -212,6 +212,18 @@ class Spells
     public function setIdSource(?int $idSource): self
     {
         $this->idSource = $idSource;
+
+        return $this;
+    }
+
+    public function getRangeSpell(): ?string
+    {
+        return $this->rangeSpell;
+    }
+
+    public function setRangeSpell(?string $rangeSpell): self
+    {
+        $this->rangeSpell = $rangeSpell;
 
         return $this;
     }

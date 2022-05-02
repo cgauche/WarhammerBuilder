@@ -8,22 +8,22 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Doctrine\Persistence\ManagerRegistry;
-use App\Form\SourceManagerType;
+use App\Form\SourceType;
 use App\Entity\Source;
 
-class EditSourceController extends AbstractController
+class SourceController extends AbstractController
 {
     #[Route('/admin/editSource', name: 'editSource')]
     public function index(ManagerRegistry $doctrine): Response
     {
-        return $this->render('edit_source/index.html.twig');
+        return $this->render('source/index.html.twig');
     }
     
     #[Route('/admin/readAllSources', name: 'readAllSources', methods : ['POST'])]
     public function readAllSources(ManagerRegistry $doctrine){
         $sources = $doctrine->getRepository(Source::class)->findAll();
         
-        return new Response($this->renderView('edit_source/tableSource.html.twig',['sources' => $sources]));
+        return new Response($this->renderView('source/tableSource.html.twig',['sources' => $sources]));
     }
 
     #[Route('/admin/createSource', name: 'createSource', methods : ['POST'])]
@@ -53,7 +53,7 @@ class EditSourceController extends AbstractController
         }
 
         return $this->renderForm('form.html.twig', [
-            'form' => $this->createForm(SourceManagerType::class, $source)
+            'form' => $this->createForm(SourceType::class, $source)
         ]);
     }
 

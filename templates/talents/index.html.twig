@@ -1,0 +1,183 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edition des talents{% endblock %}
+
+{% block body %}
+<style>
+    select {
+        display: flex;
+    }
+</style>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var elems = document.querySelectorAll('.modal');
+        var instances = M.Modal.init(elems, { dismissible: false });
+    });
+
+    window.onload = loadTable;
+    function loadTable() {
+        $.ajax({
+            url : "readAllTalents",
+            type : "POST",
+            dataType : "html",
+            success : function(data, status){
+                $("#table").html(data);
+            },
+            error : function(error, status, errorThrow){
+                console.log(status + "\n" + errorThrow)
+            }
+        })
+    }
+
+    function openForm(id = '') {
+        $.ajax({
+            url : "readTalents",
+            data : {
+                id : id
+            },
+            type : "POST",
+            dataType : "html",
+            success : function(data, status){
+                $("#formTalents").html(data);
+            },
+            error : function(error, status, errorThrow){
+                console.log(status + "\n" + errorThrow)
+            },  
+            complete : function (){
+                var elem = document.getElementById('modalTalents')
+                document.getElementsByClassName('modButton')[0].setAttribute('id',id)
+                M.Modal.getInstance(elem).open()
+            }
+        })
+    }
+
+    function saveTalents(id) {
+        var name = document.getElementById("talents_name").value
+        var minRoll = document.getElementById("talents_minRoll").value
+        var maxRoll = document.getElementById("talents_maxRoll").value
+        var max = document.getElementById("talents_Max").value
+        var test = document.getElementById("talents_Test").value
+        var description = document.getElementById("talents_description").value
+        var idSource = document.getElementById("talents_idSource").value
+
+        if(name == '') {
+            M.toast({html : 'Veuillez saisir un nom pour le talent.', classes : 'red lighten-1'})
+        }else if(max == ''){
+            M.toast({html : 'Veuillez saisir un niveau maximum pour le talent.', classes : 'red lighten-1'})
+        }else if((maxRoll == '' && minRoll != '') || (maxRoll != '' && minRoll == '')){
+            M.toast({html : 'Veuillez saisir un minimun ET un maximum pour le jet aléatoire du talent.', classes : 'red lighten-1'})
+        }else{
+            if( id != ''){
+                $.ajax({
+                    url : "updateTalents",
+                    data : {
+                        id : id,
+                        name : name,
+                        minRoll : minRoll,
+                        maxRoll : maxRoll,
+                        max : max,
+                        test : test,
+                        description : description,
+                        idSource : idSource
+                    },
+                    type : "POST",
+                    dataType : "json",
+                    success : function(data, status){
+                        M.toast({html :'Talent modifié avec succès !'})
+                        M.Modal.getInstance(document.getElementById('modalTalents')).close()
+                        loadTable();
+                    },
+                    error : function(error, status, errorThrow){
+                        console.log(status + "\n" + errorThrow)
+                    }
+                })
+            }else{
+                $.ajax({
+                    url : "createTalents",
+                    data : {
+                        name : name,
+                        minRoll : minRoll,
+                        maxRoll : maxRoll,
+                        max : max,
+                        test : test,
+                        description : description,
+                        idSource : idSource
+                    },
+                    type : "POST",
+                    dataType : "json",
+                    success : function(data, status){
+                        M.toast({html :'Talent créé avec succès !'})
+                        M.Modal.getInstance(document.getElementById('modalTalents')).close()
+                        loadTable();
+                    },
+                    error : function(error, status, errorThrow){
+                        console.log(status + "\n" + errorThrow)
+                    }
+                })
+            }
+        }
+        
+    }
+
+    function delTalents(id) {
+        $.ajax({
+            url : "deleteTalents",
+            data : {
+                id : id
+            },
+            type : "POST",
+            dataType : "json",
+            success : function(data, status){
+                M.toast({html :'Talent supprimé avec succès !'})
+                loadTable();
+            },
+            error : function(error, status, errorThrow){
+                console.log(status + "\n" + errorThrow)
+            }
+        })
+    }
+
+    function delMsg(id) {
+        var elem = $('#delTalents')
+        document.getElementsByClassName('delButton')[0].setAttribute('id',id)
+        M.Modal.getInstance(elem).open()
+    }
+
+</script>
+<div class="container">
+    <div class="section">
+        <h3 style="text-align:center">Edition des talents</h3>
+    </div>
+    <a class="wave-effect wave-light btn" href="{{path('homeAdmin')}}">Retour</a>
+    <table id='table'>
+    </table>
+
+    <!-- Modal modalTalents -->
+    <div id="modalTalents" class="modal">
+        <div class="modal-content">
+            <h4 id="formTitle">Talent</h4>
+            <div id='formTalents' class="input-field row"></div>
+        </div>
+        <div class="modal-footer">
+            <a onclick="saveTalents(this.id)" class="wave-effect wave-green btn-flat modButton">Enregistrer</a>
+            <a href="#!" class="modal-close wave-effect wave-red btn-flat">Annuler</a>
+        </div>
+    </div>
+
+    <!-- Modal deleteTalents -->
+    <div id="delTalents" class="modal">
+        <div class="modal-content">
+            <h4>Attention !</h4>
+            <p>
+                Cette suppression est irréversible.
+                <br>
+                Voulez-vous continuer ?
+            </p>
+        </div>
+        <div class="modal-footer">
+            <a onclick="delTalents(this.id)" class="modal-close wave-effect wave-green btn-flat delButton">Oui</a>
+            <a href="#!" class="modal-close wave-effect wave-red btn-flat">Non</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

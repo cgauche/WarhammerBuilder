@@ -1,0 +1,350 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edition des races{% endblock %}
+
+{% block body %}
+<!-- Override graphic framework, do some shit on select input -->
+<style>
+    select {
+        display: flex;
+    }
+
+    .modal {
+        max-height: 80%;
+    }
+
+    .option {
+        width: auto !important;
+        height: auto !important;
+    }
+</style>
+<script>
+
+    /******************** INITIALISATION ***********************/
+    document.addEventListener('DOMContentLoaded', function () {
+        var elems = document.querySelectorAll('.modal');
+        var instances = M.Modal.init(elems, { dismissible: false });
+    });
+    window.onload = loadTable;
+    /*********************************************************/
+
+    function loadTable() {
+        $.ajax({
+            url: "readAllSpecies",
+            type: "POST",
+            dataType: "html",
+            success: function (data, status) {
+                $("#table").html(data);
+                var elems = document.querySelectorAll('.dropdown-trigger');
+                var instances = M.Dropdown.init(elems);
+            },
+            error: function (error, status, errorThrow) {
+                console.log(status + "\n" + errorThrow)
+            }
+        })
+    }
+
+    function openForm(id = '') {
+        $.ajax({
+            url: "readSpecies",
+            data: {
+                id: id
+            },
+            type: "POST",
+            dataType: "html",
+            success: function (data, status) {
+                $("#formSpecies").html(data);
+            },
+            error: function (error, status, errorThrow) {
+                console.log(status + "\n" + errorThrow)
+            },
+            complete: function () {
+                var elem = document.getElementById('modalSpecies')
+                document.getElementsByClassName('modButton')[0].setAttribute('id', id)
+                M.Modal.getInstance(elem).open()
+            }
+        })
+    }
+
+    function openCharac(id = '') {
+        $.ajax({
+            url: "readBaseCharac",
+            data: {
+                id: id
+            },
+            type: "POST",
+            dataType: "html",
+            success: function (data, status) {
+                $("#tableCharacs").html(data);
+            },
+            error: function (error, status, errorThrow) {
+                console.log(status + "\n" + errorThrow)
+            },
+            complete: function () {
+                var elem = document.getElementById('modalCharacs')
+                document.getElementsByClassName('modButtonCharacs')[0].setAttribute('id', id)
+                M.Modal.getInstance(elem).open()
+            }
+        })
+    }
+
+    function openCareers(id = '') {
+        $.ajax({
+            url: "readAccesCareers",
+            data: {
+                id: id
+            },
+            type: "POST",
+            dataType: "html",
+            success: function (data, status) {
+                $("#tableCareers").html(data);
+            },
+            error: function (error, status, errorThrow) {
+                console.log(status + "\n" + errorThrow)
+            },
+            complete: function () {
+                var elem = document.getElementById('modalCareers')
+                document.getElementsByClassName('modButtonCareers')[0].setAttribute('id', id)
+                M.Modal.getInstance(elem).open()
+            }
+        })
+    }
+
+    function saveCharacs(id = '') {
+        var tableRow = document.getElementById("tableCharacs").getElementsByTagName('tr')
+        var data = {}
+        for (var i = 1; i < tableRow.length; i++) {
+            data[i] = {}
+            data[i]['ID'] = tableRow[i].getElementsByTagName("td")[0].textContent //IDLine
+            data[i]['base'] = tableRow[i].getElementsByTagName("td")[2].getElementsByTagName("input")[0].value //Base
+            data[i]['roll'] = tableRow[i].getElementsByTagName("td")[3].getElementsByTagName("input")[0].value //Roll
+        }
+
+        $.ajax({
+            url: "saveBaseCharac",
+            data: {
+                id: id,
+                data: JSON.stringify(data)
+            },
+            type: "POST",
+            dataType: "json",
+            success: function (data, status) {
+                console.log(data)
+                M.toast({ html: 'Caractéristiques enregistrées avec succès !' })
+                M.Modal.getInstance(document.getElementById('modalCharacs')).close()
+            },
+            error: function (error, status, errorThrow) {
+                console.log(status + "\n" + errorThrow)
+            }
+        })
+    }
+
+    function saveCareers(id = '') {
+        var tableRow = document.getElementById("tableCareers").getElementsByTagName('tr')
+        var data = {}
+        for (var i = 1; i < tableRow.length; i++) {
+            data[i] = {}
+            data[i]['ID'] = tableRow[i].getElementsByTagName("td")[0].textContent //IDLine
+            data[i]['value'] = tableRow[i].getElementsByClassName("switch")[0].children[0].getElementsByTagName("input")[0].checked //Value
+        }
+        console.log(data)
+        
+        $.ajax({
+            url: "saveAccesCareers",
+            data: {
+                id: id,
+                data: JSON.stringify(data)
+            },
+            type: "POST",
+            dataType: "json",
+            success: function (data, status) {
+                console.log(data)
+                M.toast({ html: 'Carrières enregistrées avec succès !' })
+                M.Modal.getInstance(document.getElementById('modalCareers')).close()
+            },
+            error: function (error, status, errorThrow) {
+                console.log(status + "\n" + errorThrow)
+            }
+        })
+    }
+
+    function saveSpecies(id) {
+        var name = document.getElementById("species_name").value
+        var desc = document.getElementById("species_description").value
+        var idSource = document.getElementById("species_idSource").value
+        var rollmin = document.getElementById("species_rollmin").value
+        var rollmax = document.getElementById("species_rollmax").value
+        var randomtalents = document.getElementById("species_randomtalents").value
+        var age = document.getElementById("species_age").value
+        var rollage = document.getElementById("species_rollage").value
+        var height = document.getElementById("species_height").value
+        var rollheight = document.getElementById("species_rollheight").value
+        var fate = document.getElementById("species_fate").value
+        var resilience = document.getElementById("species_resilience").value
+        var frSpend = document.getElementById("species_frSpend").value
+
+        if (name == '') {
+            M.toast({ html: 'Veuillez saisir un nom pour la classe.', classes: 'red lighten-1' })
+        } else if (rollmin == '') {
+            M.toast({ html: 'Veuillez saisir un nombre minimun pour le jet de dés.', classes: 'red lighten-1' })
+        } else if (fate == '') {
+            M.toast({ html: 'Veuillez saisir le nombre de points de destin.', classes: 'red lighten-1' })
+        } else if (resilience == '') {
+            M.toast({ html: 'Veuillez saisir le nombre de points de résilience.', classes: 'red lighten-1' })
+        } else if (frSpend == '') {
+            M.toast({ html: 'Veuillez saisir le nombre de points supplémentaires.', classes: 'red lighten-1' })
+        } else {
+            if (id != '') {
+                $.ajax({
+                    url: "updateSpecies",
+                    data: {
+                        id: id,
+                        name: name,
+                        desc: desc,
+                        idSource: idSource,
+                        rollmin: rollmin,
+                        rollmax: rollmax,
+                        randomtalents: randomtalents,
+                        age: age,
+                        rollage: rollage,
+                        height: height,
+                        rollheight: rollheight,
+                        fate: fate,
+                        resilience: resilience,
+                        frSpend: frSpend
+                    },
+                    type: "POST",
+                    dataType: "json",
+                    success: function (data, status) {
+                        M.toast({ html: 'Race modifiée avec succès !' })
+                        M.Modal.getInstance(document.getElementById('modalSpecies')).close()
+                        loadTable();
+                    },
+                    error: function (error, status, errorThrow) {
+                        console.log(status + "\n" + errorThrow)
+                    }
+                })
+            } else {
+                $.ajax({
+                    url: "createSpecies",
+                    data: {
+                        name: name,
+                        desc: desc,
+                        idSource: idSource,
+                        rollmin: rollmin,
+                        rollmax: rollmax,
+                        randomtalents: randomtalents,
+                        age: age,
+                        rollage: rollage,
+                        height: height,
+                        rollheight: rollheight,
+                        fate: fate,
+                        resilience: resilience,
+                        frSpend: frSpend
+                    },
+                    type: "POST",
+                    dataType: "json",
+                    success: function (data, status) {
+                        M.toast({ html: 'Race créé avec succès !' })
+                        M.Modal.getInstance(document.getElementById('modalSpecies')).close()
+                        loadTable();
+                    },
+                    error: function (error, status, errorThrow) {
+                        console.log(status + "\n" + errorThrow)
+                    }
+                })
+            }
+        }
+
+    }
+
+    function delSpecies(id) {
+        $.ajax({
+            url: "deleteSpecies",
+            data: {
+                id: id
+            },
+            type: "POST",
+            dataType: "json",
+            success: function (data, status) {
+                M.toast({ html: 'Race supprimée avec succès !' })
+                loadTable();
+            },
+            error: function (error, status, errorThrow) {
+                console.log(status + "\n" + errorThrow)
+            }
+        })
+    }
+
+    function delMsg(id) {
+        var elem = $('#delSpecies')
+        document.getElementsByClassName('delButton')[0].setAttribute('id', id)
+        M.Modal.getInstance(elem).open()
+    }
+</script>
+<div class="container">
+    <div class="section">
+        <h3 style="text-align:center">Edition des races</h3>
+    </div>
+    <a class="wave-effect wave-light btn" href="{{path('homeAdmin')}}">Retour</a>
+    <table id='table'>
+    </table>
+
+    <!-- Modal modalSpecies -->
+    <div id="modalSpecies" class="modal">
+        <div class="modal-content">
+            <h4 id="formTitle">Classe</h4>
+            <div id='formSpecies' class="input-field row"></div>
+        </div>
+        <div class="modal-footer">
+            <a onclick="saveSpecies(this.id)" class="wave-effect wave-green btn-flat modButton">Enregistrer</a>
+            <a href="#!" class="modal-close wave-effect wave-red btn-flat">Annuler</a>
+        </div>
+    </div>
+
+    <!-- Modal modalCharacs -->
+    <div id="modalCharacs" class="modal">
+        <div class="modal-content">
+            <h4 id="titleCharac">Caractéristiques de base de la race</h4>
+            <div class="input-field row">
+                <table id="tableCharacs"></table>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a onclick="saveCharacs(this.id)" class="wave-effect wave-green btn-flat modButtonCharacs">Enregistrer</a>
+            <a href="#!" class="modal-close wave-effect wave-red btn-flat">Annuler</a>
+        </div>
+    </div>
+
+    <!-- Modal modalCareers -->
+    <div id="modalCareers" class="modal">
+        <div class="modal-content">
+            <h4 id="titleCharac">Carrières disponibles de la race</h4>
+            <div class="input-field row">
+                <table id="tableCareers"></table>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a onclick="saveCareers(this.id)" class="wave-effect wave-green btn-flat modButtonCareers">Enregistrer</a>
+            <a href="#!" class="modal-close wave-effect wave-red btn-flat">Annuler</a>
+        </div>
+    </div>
+
+    <!-- Modal deleteSpecies -->
+    <div id="delSpecies" class="modal">
+        <div class="modal-content">
+            <h4>Attention !</h4>
+            <p>
+                Cette suppression est irréversible.
+                <br>
+                Voulez-vous continuer ?
+            </p>
+        </div>
+        <div class="modal-footer">
+            <a onclick="delSpecies(this.id)" class="modal-close wave-effect wave-green btn-flat delButton">Oui</a>
+            <a href="#!" class="modal-close wave-effect wave-red btn-flat">Non</a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

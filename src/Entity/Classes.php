@@ -35,6 +35,11 @@ class Classes
      */
     private $description;
 
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $idSource;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -60,6 +65,18 @@ class Classes
     public function setDescription(?string $description): self
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getIdSource(): ?int
+    {
+        return $this->idSource;
+    }
+
+    public function setIdSource(?int $idSource): self
+    {
+        $this->idSource = $idSource;
 
         return $this;
     }

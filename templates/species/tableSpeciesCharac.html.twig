@@ -1,0 +1,14 @@
+<tr>
+        <th class="unvisible"></th>
+        <th>Nom</th>
+        <th>Base</th>
+        <th>Nombre de dés supplémentaires</th>
+</tr>
+{% for charac in characs %}
+        <tr>
+                <td class="unvisible" id="characID">{{charac['id']}}</td>
+                <td>{{charac['name']}}</td>
+                <td><input type="integer" value="{{charac['base']}}"/></td>
+                <td><input type="integer" value="{{charac['nbRoll']}}"/></td>
+        </tr>
+{% endfor %}

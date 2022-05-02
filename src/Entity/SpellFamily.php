@@ -5,12 +5,12 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * SpellType
+ * SpellFamily
  *
- * @ORM\Table(name="spell_type")
+ * @ORM\Table(name="spell_family")
  * @ORM\Entity
  */
-class SpellType
+class SpellFamily
 {
     /**
      * @var int
@@ -55,6 +55,11 @@ class SpellType
      * @ORM\Column(name="Description", type="string", length=1000, nullable=true)
      */
     private $description;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $idSource;
 
     public function getId(): ?int
     {
@@ -117,6 +122,18 @@ class SpellType
     public function setDescription(?string $description): self
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getIdSource(): ?int
+    {
+        return $this->idSource;
+    }
+
+    public function setIdSource(?int $idSource): self
+    {
+        $this->idSource = $idSource;
 
         return $this;
     }

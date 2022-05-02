@@ -1,8 +1,20 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edition des sources{% endblock %}
+{% block title %}Edition des compétences{% endblock %}
 
 {% block body %}
+<!-- Override graphic framework, do some shit on select input -->
+<style>
+    #modalSkills {
+        min-height: 80% !important;
+    }
+    .dropdown-content li{
+        min-height: 10px;
+    }
+    .dropdown-content li>span{
+        line-height: 10px;
+    }
+</style>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         var elems = document.querySelectorAll('.modal');
@@ -12,7 +24,7 @@
     window.onload = loadTable;
     function loadTable() {
         $.ajax({
-            url : "readAllSources",
+            url : "readAllSkills",
             type : "POST",
             dataType : "html",
             success : function(data, status){
@@ -26,50 +38,59 @@
 
     function openForm(id = '') {
         $.ajax({
-            url : "readSource",
+            url : "readSkills",
             data : {
                 id : id
             },
             type : "POST",
             dataType : "html",
             success : function(data, status){
-                $("#formSource").html(data);
+                $("#formSkills").html(data);
+                M.FormSelect.init(document.querySelectorAll('select'));
             },
             error : function(error, status, errorThrow){
                 console.log(status + "\n" + errorThrow)
-            },
+            },  
             complete : function (){
-                var elem = document.getElementById('modalSource')
+                var elem = document.getElementById('modalSkills')
                 document.getElementsByClassName('modButton')[0].setAttribute('id',id)
                 M.Modal.getInstance(elem).open()
             }
         })
     }
 
-    function saveSource(id) {
-        var name = document.getElementById("source_manager_name").value
-        var year = document.getElementById("source_manager_year").value
-        var isbn = document.getElementById("source_manager_isbn").value
+    function saveSkills(id) {
+        var name = document.getElementById("skills_name").value
+        var type = document.getElementById("skills_type").value
+        var specs = document.getElementById("skills_specs").value
+        var description = document.getElementById("skills_description").value
+        var idCharac = document.getElementById("skills_idCaracteristics").value
+        var idSource = document.getElementById("skills_idSource").value
 
         if(name == '') {
-            M.toast({html : 'Veuillez saisir un nom pour la source.', classes : 'red lighten-1'})
-        }else if(year == ''){
-            M.toast({html : 'Veuillez saisir une année pour la source.', classes : 'red lighten-1'})
+            M.toast({html : 'Veuillez saisir un nom pour la compétence.', classes : 'red lighten-1'})
+        }else if(type == ''){
+            M.toast({html : 'Veuillez sélectionner un type pour la compétence.', classes : 'red lighten-1'})
+        }else if(idCharac == '' || idCharac == 0 ){
+            M.toast({html : 'Veuillez sélectionner une caractéristique pour la compétence.', classes : 'red lighten-1'})
         }else{
             if( id != ''){
                 $.ajax({
-                    url : "updateSource",
+                    url : "updateSkills",
                     data : {
                         id : id,
                         name : name,
-                        year : year,
-                        isbn : isbn
+                        type : type,
+                        specs : specs,
+                        description : description,
+                        idCharac : idCharac,
+                        idSource : idSource
                     },
                     type : "POST",
                     dataType : "json",
                     success : function(data, status){
-                        M.toast({html : 'Source modifée avec succès !'})
-                        M.Modal.getInstance(document.getElementById('modalSource')).close()
+                        M.toast({html :'Compétence modifiée avec succès !'})
+                        M.Modal.getInstance(document.getElementById('modalSkills')).close()
                         loadTable();
                     },
                     error : function(error, status, errorThrow){
@@ -78,18 +99,20 @@
                 })
             }else{
                 $.ajax({
-                    url : "createSource",
+                    url : "createSkills",
                     data : {
                         name : name,
-                        year : year,
-                        isbn : isbn
+                        type : type,
+                        specs : specs,
+                        description : description,
+                        idCharac : idCharac,
+                        idSource : idSource
                     },
                     type : "POST",
                     dataType : "json",
                     success : function(data, status){
-                        console.log(data);
-                        M.toast({html : 'Source créée avec succès !'})
-                        M.Modal.getInstance(document.getElementById('modalSource')).close()
+                        M.toast({html :'Compétence créée avec succès !'})
+                        M.Modal.getInstance(document.getElementById('modalSkills')).close()
                         loadTable();
                     },
                     error : function(error, status, errorThrow){
@@ -101,16 +124,16 @@
         
     }
 
-    function delSource(id) {
+    function delSkills(id) {
         $.ajax({
-            url : "deleteSource",
+            url : "deleteSkills",
             data : {
                 id : id
             },
             type : "POST",
             dataType : "json",
             success : function(data, status){
-                M.toast({html : 'Source supprimée avec succès !'})
+                M.toast({html :'Compétence supprimée avec succès !'})
                 loadTable();
             },
             error : function(error, status, errorThrow){
@@ -120,7 +143,7 @@
     }
 
     function delMsg(id) {
-        var elem = $('#delSource')
+        var elem = $('#delSkills')
         document.getElementsByClassName('delButton')[0].setAttribute('id',id)
         M.Modal.getInstance(elem).open()
     }
@@ -128,26 +151,26 @@
 </script>
 <div class="container">
     <div class="section">
-        <h3 style="text-align:center">Edition des sources</h3>
+        <h3 style="text-align:center">Edition des compétences</h3>
     </div>
-    <a class="waves-effect waves-light btn" href="/admin">Retour</a>
+    <a class="wave-effect wave-light btn" href="{{path('homeAdmin')}}">Retour</a>
     <table id='table'>
     </table>
 
-    <!-- Modal modalSource -->
-    <div id="modalSource" class="modal">
+    <!-- Modal modalSkills -->
+    <div id="modalSkills" class="modal modal-fixed-footer">
         <div class="modal-content">
-            <h4 id="formTitle">Edition</h4>
-            <div id='formSource'></div>
+            <h4 id="formTitle">Compétence</h4>
+            <div id='formSkills' class="input-field row"></div>
         </div>
         <div class="modal-footer">
-            <a onclick="saveSource(this.id)" class="waves-effect waves-green btn-flat modButton">Enregistrer</a>
-            <a href="#!" class="modal-close waves-effect waves-red btn-flat">Annuler</a>
+            <a onclick="saveSkills(this.id)" class="wave-effect wave-green btn-flat modButton">Enregistrer</a>
+            <a href="#!" class="modal-close wave-effect wave-red btn-flat">Annuler</a>
         </div>
     </div>
 
-    <!-- Modal deleteSource -->
-    <div id="delSource" class="modal">
+    <!-- Modal deleteSkills -->
+    <div id="delSkills" class="modal">
         <div class="modal-content">
             <h4>Attention !</h4>
             <p>
@@ -157,8 +180,8 @@
             </p>
         </div>
         <div class="modal-footer">
-            <a onclick="delSource(this.id)" class="modal-close waves-effect waves-green btn-flat delButton">Oui</a>
-            <a href="#!" class="modal-close waves-effect waves-red btn-flat">Non</a>
+            <a onclick="delSkills(this.id)" class="modal-close wave-effect wave-green btn-flat delButton">Oui</a>
+            <a href="#!" class="modal-close wave-effect wave-red btn-flat">Non</a>
         </div>
     </div>
 </div>

@@ -1,0 +1,22 @@
+<tr>
+        <th>Nom</th>
+        <th>Description</th>
+        <th>Source</th>
+        <th style="text-align:right">
+                <a class="waves-effect waves-light btn" onclick="openForm()"><i
+                        class="material-icons">add_circle_outline</i></a>
+        </th>
+</tr>
+{% for classe in classes %}
+        <tr>
+                <td>{{classe['name']}}</td>
+                <td>{{classe['desc']}}</td>
+                <td>{{classe['source']}}</td>
+                <td style="text-align:right">
+                <a class="waves-effect waves-light btn" onclick="openForm(this.id)" id="{{classe['id']}}"><i
+                        class="material-icons">border_color</i></a>
+                <a class="waves-effect waves-light btn modal-trigger" onclick="delMsg(this.id)" id="{{classe['id']}}"><i
+                        class="material-icons">delete</i></a>
+                </td>
+        </tr>
+{% endfor %}

@@ -1,0 +1,20 @@
+<tr>
+        <th>Login</th>
+        <th>Role</th>
+        <th style="text-align:right">
+                <a class="waves-effect waves-light btn" onclick="openForm()"><i
+                        class="material-icons">add_circle_outline</i></a>
+        </th>
+</tr>
+{% for user in Users %}
+        <tr>
+                <td>{{user['name']}}</td>
+                <td>{{user['role']}}</td>
+                <td style="text-align:right; width: 125px;">
+                <a class="waves-effect waves-light btn" onclick="openForm(this.id)" id="{{user['id']}}"><i
+                        class="material-icons">border_color</i></a>
+                <a class="waves-effect waves-light btn modal-trigger" onclick="delMsg(this.id)" id="{{user['id']}}"><i
+                        class="material-icons">delete</i></a>
+                </td>
+        </tr>
+{% endfor %}

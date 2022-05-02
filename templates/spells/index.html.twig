@@ -1,0 +1,197 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edition des sorts{% endblock %}
+
+{% block body %}
+<!-- Override graphic framework, do some shit on select input -->
+<style>
+    select {
+        display: flex;
+    }
+
+    .modal{
+        max-height: 80%;
+    }
+</style>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var elems = document.querySelectorAll('.modal');
+        var instances = M.Modal.init(elems, { dismissible: false });
+    });
+
+    window.onload = loadTable;
+    function loadTable() {
+        $.ajax({
+            url : "readAllSpells",
+            type : "POST",
+            dataType : "html",
+            success : function(data, status){
+                $("#table").html(data);
+            },
+            error : function(error, status, errorThrow){
+                console.log(status + "\n" + errorThrow)
+            }
+        })
+    }
+
+    function openForm(id = '') {
+        $.ajax({
+            url : "readSpells",
+            data : {
+                id : id
+            },
+            type : "POST",
+            dataType : "html",
+            success : function(data, status){
+                $("#formSpells").html(data);
+            },
+            error : function(error, status, errorThrow){
+                console.log(status + "\n" + errorThrow)
+            },  
+            complete : function (){
+                var elem = document.getElementById('modalSpells')
+                document.getElementsByClassName('modButton')[0].setAttribute('id',id)
+                M.Modal.getInstance(elem).open()
+            }
+        })
+    }
+
+    function saveSpells(id) {
+        var name = document.getElementById("spells_name").value
+        var type = document.getElementById("spells_type").value
+        var ni = document.getElementById("spells_ni").value
+        var range = document.getElementById("spells_range").value
+        var target = document.getElementById("spells_target").value
+        var length = document.getElementById("spells_length").value
+        var damage = document.getElementById("spells_damage").value
+        var description = document.getElementById("spells_description").value
+        var idSpellFamily = document.getElementById("spells_idSpellFamily").value
+        var idSource = document.getElementById("spells_idSource").value
+
+        if(name == '') {
+            M.toast({html : 'Veuillez saisir un nom pour le sort.', classes : 'red lighten-1'})
+        }else if(ni == ''){
+            M.toast({html : 'Veuillez saisir un niveau d\'incantation pour le sort.', classes : 'red lighten-1'})
+        }else if(idSpellFamily == '' || idSpellFamily == 0 ){
+            M.toast({html : 'Veuillez sélectionner une famille pour le sort.', classes : 'red lighten-1'})
+        }else{
+            if( id != ''){
+                $.ajax({
+                    url : "updateSpells",
+                    data : {
+                        id : id,
+                        name : name,
+                        type : type,
+                        ni : ni,
+                        range : range,
+                        target : target,
+                        length : length,
+                        damage : damage,
+                        description : description,
+                        idSpellFamily : idSpellFamily,
+                        idSource : idSource
+                    },
+                    type : "POST",
+                    dataType : "json",
+                    success : function(data, status){
+                        M.toast({html :'Sort modifié avec succès !'})
+                        M.Modal.getInstance(document.getElementById('modalSpells')).close()
+                        loadTable();
+                    },
+                    error : function(error, status, errorThrow){
+                        console.log(status + "\n" + errorThrow)
+                    }
+                })
+            }else{
+                $.ajax({
+                    url : "createSpells",
+                    data : {
+                        name : name,
+                        type : type,
+                        ni : ni,
+                        range : range,
+                        target : target,
+                        length : length,
+                        damage : damage,
+                        description : description,
+                        idSpellFamily : idSpellFamily,
+                        idSource : idSource
+                    },
+                    type : "POST",
+                    dataType : "json",
+                    success : function(data, status){
+                        M.toast({html :'Sort créé avec succès !'})
+                        M.Modal.getInstance(document.getElementById('modalSpells')).close()
+                        loadTable();
+                    },
+                    error : function(error, status, errorThrow){
+                        console.log(status + "\n" + errorThrow)
+                    }
+                })
+            }
+        }
+        
+    }
+
+    function delSpells(id) {
+        $.ajax({
+            url : "deleteSpells",
+            data : {
+                id : id
+            },
+            type : "POST",
+            dataType : "json",
+            success : function(data, status){
+                M.toast({html :'Sort supprimé avec succès !'})
+                loadTable();
+            },
+            error : function(error, status, errorThrow){
+                console.log(status + "\n" + errorThrow)
+            }
+        })
+    }
+
+    function delMsg(id) {
+        var elem = $('#delSpells')
+        document.getElementsByClassName('delButton')[0].setAttribute('id',id)
+        M.Modal.getInstance(elem).open()
+    }
+
+</script>
+<div class="container">
+    <div class="section">
+        <h3 style="text-align:center">Edition des sorts</h3>
+    </div>
+    <a class="wave-effect wave-light btn" href="{{path('homeAdmin')}}">Retour</a>
+    <table id='table'>
+    </table>
+
+    <!-- Modal modalSpells -->
+    <div id="modalSpells" class="modal">
+        <div class="modal-content">
+            <h4 id="formTitle">Sort</h4>
+            <div id='formSpells' class="input-field row"></div>
+        </div>
+        <div class="modal-footer">
+            <a onclick="saveSpells(this.id)" class="wave-effect wave-green btn-flat modButton">Enregistrer</a>
+            <a href="#!" class="modal-close wave-effect wave-red btn-flat">Annuler</a>
+        </div>
+    </div>
+
+    <!-- Modal deleteSpells -->
+    <div id="delSpells" class="modal">
+        <div class="modal-content">
+            <h4>Attention !</h4>
+            <p>
+                Cette suppression est irréversible.
+                <br>
+                Voulez-vous continuer ?
+            </p>
+        </div>
+        <div class="modal-footer">
+            <a onclick="delSpells(this.id)" class="modal-close wave-effect wave-green btn-flat delButton">Oui</a>
+            <a href="#!" class="modal-close wave-effect wave-red btn-flat">Non</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

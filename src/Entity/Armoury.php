@@ -24,14 +24,14 @@ class Armoury
     /**
      * @var string|null
      *
-     * @ORM\Column(name="Type", type="string", length=10, nullable=true, options={"comment"="Arme, Armure"})
+     * @ORM\Column(name="TypeGear", type="string", length=10, nullable=true, options={"comment"="Arme, Armure"})
      */
-    private $type;
+    private $typeGear;
 
     /**
      * @var string|null
      *
-     * @ORM\Column(name="Group", type="string", length=20, nullable=true, options={"comment"="à distance, cuir..."})
+     * @ORM\Column(name="GroupGear", type="string", length=20, nullable=true, options={"comment"="à distance, cuir..."})
      */
     private $group;
 
@@ -66,9 +66,9 @@ class Armoury
     /**
      * @var string|null
      *
-     * @ORM\Column(name="Range", type="string", length=10, nullable=true)
+     * @ORM\Column(name="RangeGear", type="string", length=10, nullable=true)
      */
-    private $range;
+    private $rangeGear;
 
     /**
      * @var string|null
@@ -94,9 +94,9 @@ class Armoury
     /**
      * @var string|null
      *
-     * @ORM\Column(name="Location", type="string", length=10, nullable=true)
+     * @ORM\Column(name="LocationGear", type="string", length=10, nullable=true)
      */
-    private $location;
+    private $locationGear;
 
     /**
      * @var string|null
@@ -113,9 +113,9 @@ class Armoury
     private $description;
 
     /**
-     * @var int
+     * @var int|null
      *
-     * @ORM\Column(name="ID_Source", type="integer", nullable=false)
+     * @ORM\Column(name="ID_Source", type="integer", nullable=true)
      */
     private $idSource;
 
@@ -126,12 +126,12 @@ class Armoury
 
     public function getType(): ?string
     {
-        return $this->type;
+        return $this->typeGear;
     }
 
     public function setType(?string $type): self
     {
-        $this->type = $type;
+        $this->typeGear = $type;
 
         return $this;
     }
@@ -198,12 +198,12 @@ class Armoury
 
     public function getRange(): ?string
     {
-        return $this->range;
+        return $this->rangeGear;
     }
 
-    public function setRange(?string $range): self
+    public function setRange(?string $rangeGear): self
     {
-        $this->range = $range;
+        $this->rangeGear = $rangeGear;
 
         return $this;
     }
@@ -246,12 +246,12 @@ class Armoury
 
     public function getLocation(): ?string
     {
-        return $this->location;
+        return $this->locationGear;
     }
 
     public function setLocation(?string $location): self
     {
-        $this->location = $location;
+        $this->locationGear = $location;
 
         return $this;
     }
@@ -288,6 +288,42 @@ class Armoury
     public function setIdSource(int $idSource): self
     {
         $this->idSource = $idSource;
+
+        return $this;
+    }
+
+    public function getTypeGear(): ?string
+    {
+        return $this->typeGear;
+    }
+
+    public function setTypeGear(?string $typeGear): self
+    {
+        $this->typeGear = $typeGear;
+
+        return $this;
+    }
+
+    public function getLocationGear(): ?string
+    {
+        return $this->locationGear;
+    }
+
+    public function setLocationGear(?string $locationGear): self
+    {
+        $this->locationGear = $locationGear;
+
+        return $this;
+    }
+
+    public function getRangeGear(): ?string
+    {
+        return $this->rangeGear;
+    }
+
+    public function setRangeGear(?string $rangeGear): self
+    {
+        $this->rangeGear = $rangeGear;
 
         return $this;
     }
