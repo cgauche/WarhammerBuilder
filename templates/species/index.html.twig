@@ -373,8 +373,12 @@
             type: "POST",
             dataType: "json",
             success: function (data, status) {
-                if (data['result']) {
+                if (data['result'] != null) {
                     cell.setAttribute("class",'width250') 
+                    cell.children[1].setAttribute("class",'autocomplete') 
+                    M.Autocomplete.init(cell.children[1], {
+                        data : data['result'].split(",").map(item => item.trim()).reduce((value,key)=> (value[key]=null,value),{})
+                    });
                 } else {
                     cell.setAttribute("class", "unvisible width250")
                     cell.getElementsByTagName('input')[0].value = ''
@@ -535,8 +539,12 @@
             type: "POST",
             dataType: "json",
             success: function (data, status) {
-                if (data['result']) {
+                if (data['result'] != null) {
                     cell.setAttribute("class",'width250') 
+                    cell.children[1].setAttribute("class",'autocomplete') 
+                    M.Autocomplete.init(cell.children[1], {
+                        data : data['result'].split(",").map(item => item.trim()).reduce((value,key)=> (value[key]=null,value),{})
+                    });
                 } else {
                     cell.setAttribute("class", "unvisible width250")
                     cell.getElementsByTagName('input')[0].value = ''

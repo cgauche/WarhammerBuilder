@@ -322,7 +322,7 @@ class SpeciesController extends AbstractController
     #[Route('/admin/haveSpecs', name : 'haveSpecs', methods : ['POST'])]
     public function haveSpecs(ManagerRegistry $doctrine, Request $request){
         $skill = $doctrine->getRepository(Skills::class)->find($request->request->get('id'));
-        return new JSONResponse(['result' => $skill->getSpecs() != '']);
+        return new JSONResponse(['result' => $skill->getSpecs()]);
     }
 
     #[Route('/admin/saveSkillsSpecies', name : 'saveSkillsSpecies', methods : ['POST'])]
@@ -377,7 +377,7 @@ class SpeciesController extends AbstractController
     #[Route('/admin/talentSpecs', name : 'talentSpecs', methods : ['POST'])]
     public function talentSpecs(ManagerRegistry $doctrine, Request $request){
         $talent = $doctrine->getRepository(Talents::class)->find($request->request->get('id'));
-        return new JSONResponse(['result' => $talent->getSpecs() != '']);
+        return new JSONResponse(['result' => $talent->getSpecs()]);
     }
 
     #[Route('/admin/getAllTalents', name : 'getAllTalents', methods : ['POST'])]

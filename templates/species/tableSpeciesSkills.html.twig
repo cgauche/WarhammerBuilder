@@ -11,7 +11,7 @@
         <td class="unvisible" id="skillsID">{{skill['id']}}</td>
         <td class="width250">
                 <label>Compétence</label>
-                <select name="skill" id="skill{{skill['id']}}" onchange="haveSpecs(this.value)" required>
+                <select name="skill" id="skill{{skill['id']}}" onchange="haveSpecs(this)" required>
                         {% if skill['sID'] == "" %}
                                 <option value="" selected>Sélectionner une compétence...</option>        
                         {% else %}
@@ -35,7 +35,7 @@
         {% endif %} 
         
                 <label for="specs{{skill['id']}}">Specs</label>
-                <input id="specs{{skill['id']}}" value="{{skill['specs']}}">
+                <input id="specs{{skill['id']}}" value="{{skill['specs']}}" class="autocomplete">
         </td>
         <td>
                 <a class="waves-effect waves-light btn modal-trigger" onclick="delSkillsLine(this)" id="{{skill['id']}}"><i
