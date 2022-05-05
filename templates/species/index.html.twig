@@ -3,14 +3,13 @@
 {% block title %}Edition des races{% endblock %}
 
 {% block body %}
-<!-- Override graphic framework, do some shit on select input -->
 <style>
-    select {
-        display: flex;
-    }
-
     .modal {
         max-height: 80%;
+    }
+
+    #modalTalents{
+        width: 65%;
     }
 
     .option {
@@ -54,6 +53,7 @@
             dataType: "html",
             success: function (data, status) {
                 $("#formSpecies").html(data);
+                M.FormSelect.init(document.querySelectorAll('select'),{dropdownOptions:{container:document.body}});
             },
             error: function (error, status, errorThrow) {
                 console.log(status + "\n" + errorThrow)
@@ -146,8 +146,9 @@
             data[i] = {}
             data[i]['ID'] = tableRow[i].getElementsByTagName("td")[0].textContent //IDLine
             data[i]['value'] = tableRow[i].getElementsByClassName("switch")[0].children[0].getElementsByTagName("input")[0].checked //Value
+            data[i]['minRoll'] = parseInt(document.getElementById("min"+data[i]['ID']).value)
+            data[i]['maxRoll'] = parseInt(document.getElementById("max"+data[i]['ID']).value)
         }
-        console.log(data)
         
         $.ajax({
             url: "saveAccesCareers",
@@ -158,7 +159,6 @@
             type: "POST",
             dataType: "json",
             success: function (data, status) {
-                console.log(data)
                 M.toast({ html: 'Carrières enregistrées avec succès !' })
                 M.Modal.getInstance(document.getElementById('modalCareers')).close()
             },
@@ -281,6 +281,324 @@
         document.getElementsByClassName('delButton')[0].setAttribute('id', id)
         M.Modal.getInstance(elem).open()
     }
+
+    /*************************************************************
+    * GESTION DES COMPETENCES PAR DEFAUT (SkillsSpecies)
+    *************************************************************/    
+    function openSkills(id){
+        $.ajax({
+            url: "readSkillsSpecies",
+            data: {
+                id: id
+            },
+            type: "POST",
+            dataType: "html",
+            success: function (data, status) {
+                $("#tableSkills").html(data);
+                M.FormSelect.init(document.querySelectorAll('select'),{dropdownOptions:{container:document.body}});
+            },
+            error: function (error, status, errorThrow) {
+                console.log(status + "\n" + errorThrow)
+            },
+            complete: function () {
+                var elem = document.getElementById('modalSkills')
+                document.getElementsByClassName('modButtonSkills')[0].setAttribute('id', id)
+                M.Modal.getInstance(elem).open()
+            }
+        })
+    }
+
+    function createSkillsLine(){
+        var row = document.getElementById('tableSkills').insertRow(-1)
+        var cellID = row.insertCell(-1)
+        cellID.setAttribute('class','unvisible')
+        cellID.innerHTML = '-1'
+
+        var cellSkills = row.insertCell(-1)
+        var labelS = document.createElement('label')
+        labelS.innerHTML = 'Compétence'
+        var talentList = document.createElement('select')
+        talentList.setAttribute('name',"skill")
+        talentList.setAttribute('class',"width250")
+        talentList.setAttribute("onchange","haveSpecs(this)")
+        var opt = document.createElement('option')
+        opt.innerHTML = 'Sélectionner une compétence ...'
+        opt.setAttribute('value','')
+        talentList.append(opt)
+        $.ajax({
+            url: "getAllSkills",
+            type: "POST",
+            dataType: "JSON",
+            success: function (data, status) {
+                for(var i = 0; i < Object.keys(data).length; i++){
+                    opt = document.createElement('option')
+                    opt.innerHTML = data[i].name
+                    opt.setAttribute('value',data[i].id)
+                    talentList.append(opt)
+                }
+
+                cellSkills.append(labelS)
+                cellSkills.append(talentList)
+                
+                var cellSpec = row.insertCell(-1)
+                cellSpec.setAttribute('class', 'unvisible')
+                var labelSpec = document.createElement('label')
+                labelSpec.innerHTML = 'Specs'
+                var inputSpec = document.createElement('input')
+                cellSpec.append(labelSpec)
+                cellSpec.append(inputSpec)
+
+                var cellButton = row.insertCell(-1)
+                var buttonDel = document.createElement('a')
+                buttonDel.setAttribute('class', 'waves-effect waves-light btn modal-trigger')
+                buttonDel.setAttribute('onclick','delSkillsLine(this)')
+                var icon = document.createElement('i')
+                icon.innerHTML = 'delete'
+                icon.setAttribute('class','material-icons')
+                buttonDel.append(icon)
+                cellButton.append(buttonDel)
+
+                M.FormSelect.init(talentList,{dropdownOptions:{container:document.body}});
+            },
+        })
+    }
+
+    function haveSpecs(select){
+        var cell = select.parentElement.parentElement.parentElement.children[2]
+        $.ajax({
+            url: "haveSpecs",
+            data: {
+                id: select.value
+            },
+            type: "POST",
+            dataType: "json",
+            success: function (data, status) {
+                if (data['result']) {
+                    cell.setAttribute("class",'width250') 
+                } else {
+                    cell.setAttribute("class", "unvisible width250")
+                    cell.getElementsByTagName('input')[0].value = ''
+                }
+            },
+            error: function (error, status, errorThrow) {
+                cell.setAttribute("class", "unvisible width250")
+                console.log(status + "\n" + errorThrow)
+            }
+        })
+    }
+
+    function delSkillsLine(button){
+        var row = button.parentElement.parentElement
+        var id = parseInt(row.children[0].innerHTML)
+        if(id > 0 && id != undefined && id != null){
+            $.ajax({
+                url : 'deleteSkillsSpecies',
+                data : {
+                    id : id
+                },
+                type : 'POST',
+                dataType : 'JSON',
+                success : function() {
+                    row.remove()
+                }
+            })
+        }else{
+            row.remove()
+        }
+    }
+
+    function saveSkills(id){
+        var tableRow = document.getElementById("tableSkills").getElementsByTagName('tr')
+        var data = {}
+        for (var i = 1; i < tableRow.length; i++) {
+            data[i] = {}
+            data[i]['id'] = tableRow[i].children[0].textContent //IDLine
+            data[i]['idS'] = tableRow[i].children[1].children[1].getElementsByTagName("select")[0].value //IDSkills
+            data[i]['specs'] = tableRow[i].children[2].children[1].value //specs
+        }
+
+        $.ajax({
+            url: "saveSkillsSpecies",
+            data: {
+                id: id,
+                data: JSON.stringify(data)
+            },
+            type: "POST",
+            dataType: "json",
+            success: function (data, status) {
+                M.toast({ html: 'Compétences par défaut enregistrés avec succès !' })
+                M.Modal.getInstance(document.getElementById('modalSkills')).close()
+            },
+            error: function (error, status, errorThrow) {
+                console.log(status + "\n" + errorThrow)
+            }
+        })
+    }
+
+    /*************************************************************
+    * GESTION DES TALENTS PAR DEFAUT (TalentsSpecies)
+    *************************************************************/   
+    function openTalents(id){
+        $.ajax({
+            url: "readTalentsSpecies",
+            data: {
+                id: id
+            },
+            type: "POST",
+            dataType: "html",
+            success: function (data, status) {
+                $("#tableTalents").html(data);
+                M.FormSelect.init(document.querySelectorAll('select'),{dropdownOptions:{container:document.body}});
+            },
+            error: function (error, status, errorThrow) {
+                console.log(status + "\n" + errorThrow)
+            },
+            complete: function () {
+                var elem = document.getElementById('modalTalents')
+                document.getElementsByClassName('modButtonTalents')[0].setAttribute('id', id)
+                M.Modal.getInstance(elem).open()
+            }
+        })
+    }
+
+    function createTalentsLine(){
+        var row = document.getElementById('tableTalents').insertRow(-1)
+        var cellID = row.insertCell(-1)
+        cellID.setAttribute('class','unvisible')
+        cellID.innerHTML = '-1'
+
+        var cellTalents = row.insertCell(-1)
+        var labelS = document.createElement('label')
+        labelS.innerHTML = 'Compétence'
+        var talentList = document.createElement('select')
+        talentList.setAttribute('name',"talent")
+        talentList.setAttribute('class',"width250")
+        talentList.setAttribute("onchange","talentSpecs(this)")
+        var opt = document.createElement('option')
+        opt.innerHTML = 'Sélectionner une compétence ...'
+        opt.setAttribute('value','')
+        talentList.append(opt)
+        $.ajax({
+            url: "getAllTalents",
+            type: "POST",
+            dataType: "JSON",
+            success: function (data, status) {
+                for(var i = 0; i < Object.keys(data).length; i++){
+                    opt = document.createElement('option')
+                    opt.innerHTML = data[i].name
+                    opt.setAttribute('value',data[i].id)
+                    talentList.append(opt)
+                }
+
+                cellTalents.append(labelS)
+                cellTalents.append(talentList)
+                
+                var cellSpec = row.insertCell(-1)
+                cellSpec.setAttribute('class', 'unvisible')
+                var labelSpec = document.createElement('label')
+                labelSpec.innerHTML = 'Specs'
+                var inputSpec = document.createElement('input')
+                cellSpec.append(labelSpec)
+                cellSpec.append(inputSpec)
+
+                var cellTalents2 = row.insertCell(-1)
+                cellTalents2.append(labelS.cloneNode(true))
+                cellTalents2.append(talentList.cloneNode(true))
+
+                var cellSpec2 = row.insertCell(-1)
+                cellSpec2.setAttribute('class', 'unvisible')
+                cellSpec2.append(labelSpec.cloneNode(true))
+                cellSpec2.append(inputSpec.cloneNode(true))
+
+                var cellButton = row.insertCell(-1)
+                var buttonDel = document.createElement('a')
+                buttonDel.setAttribute('class', 'waves-effect waves-light btn modal-trigger')
+                buttonDel.setAttribute('onclick','delTalentsLine(this)')
+                var icon = document.createElement('i')
+                icon.innerHTML = 'delete'
+                icon.setAttribute('class','material-icons')
+                buttonDel.append(icon)
+                cellButton.append(buttonDel)
+
+                M.FormSelect.init(document.querySelectorAll('select'),{dropdownOptions:{container:document.body}});
+            },
+        })
+    }
+
+    function talentSpecs(select){
+        var cell = select.parentElement.parentElement.nextElementSibling
+        $.ajax({
+            url: "talentSpecs",
+            data: {
+                id: select.value
+            },
+            type: "POST",
+            dataType: "json",
+            success: function (data, status) {
+                if (data['result']) {
+                    cell.setAttribute("class",'width250') 
+                } else {
+                    cell.setAttribute("class", "unvisible width250")
+                    cell.getElementsByTagName('input')[0].value = ''
+                }
+            },
+            error: function (error, status, errorThrow) {
+                cell.setAttribute("class", "unvisible width250")
+                console.log(status + "\n" + errorThrow)
+            }
+        })
+    }
+
+    function delTalentsLine(button){
+        var row = button.parentElement.parentElement
+        var id = parseInt(row.children[0].innerHTML)
+        if(id > 0 && id != undefined && id != null){
+            $.ajax({
+                url : 'deleteTalentsSpecies',
+                data : {
+                    id : id
+                },
+                type : 'POST',
+                dataType : 'JSON',
+                success : function() {
+                    row.remove()
+                }
+            })
+        }else{
+            row.remove()
+        }
+    }
+
+    function saveTalents(id){
+        var tableRow = document.getElementById("tableTalents").getElementsByTagName('tr')
+        var data = {}
+        for (var i = 1; i < tableRow.length; i++) {
+            data[i] = {}
+            data[i]['id'] = tableRow[i].children[0].textContent //IDLine
+            data[i]['idS'] = parseInt(tableRow[i].children[1].children[1].getElementsByTagName("select")[0].value) //IDTalents
+            data[i]['specs'] = tableRow[i].children[2].children[1].value //specs
+            data[i]['idS2'] = parseInt(tableRow[i].children[3].children[1].getElementsByTagName("select")[0].value) //IDTalents2
+            data[i]['specs2'] = tableRow[i].children[4].children[1].value //specs2
+        }
+
+        $.ajax({
+            url: "saveTalentsSpecies",
+            data: {
+                id: id,
+                data: JSON.stringify(data)
+            },
+            type: "POST",
+            dataType: "json",
+            success: function (data, status) {
+                M.toast({ html: 'Talents par défaut enregistrés avec succès !' })
+                M.Modal.getInstance(document.getElementById('modalTalents')).close()
+            },
+            error: function (error, status, errorThrow) {
+                console.log(status + "\n" + errorThrow)
+            }
+        })
+    }
+    
 </script>
 <div class="container">
     <div class="section">
@@ -327,6 +645,34 @@
         <div class="modal-footer">
             <a onclick="saveCareers(this.id)" class="wave-effect wave-green btn-flat modButtonCareers">Enregistrer</a>
             <a href="#!" class="modal-close wave-effect wave-red btn-flat">Annuler</a>
+        </div>
+    </div>
+
+    <!-- Modal modalSkills -->
+    <div id="modalSkills" class="modal">
+        <div class="modal-content">
+            <h4 id="titleSkills">Compétences par défaut de la race</h4>
+            <div class="input-field">
+                <table id="tableSkills"></table>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a onclick="saveSkills(this.id)" class="wave-effect wave-green btn-flat modButtonSkills">Enregistrer</a>
+            <a class="modal-close wave-effect wave-red btn-flat">Annuler</a>
+        </div>
+    </div>
+
+    <!-- Modal modalTalents -->
+    <div id="modalTalents" class="modal">
+        <div class="modal-content">
+            <h4 id="titleTalents">Compétences par défaut de la race</h4>
+            <div class="input-field">
+                <table id="tableTalents"></table>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a onclick="saveTalents(this.id)" class="wave-effect wave-green btn-flat modButtonTalents">Enregistrer</a>
+            <a class="modal-close wave-effect wave-red btn-flat">Annuler</a>
         </div>
     </div>
 

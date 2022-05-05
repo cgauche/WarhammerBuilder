@@ -1,0 +1,73 @@
+<tr>
+        <th class="unvisible"></th>
+        <th colspan="2">Talent</th>
+        <th colspan="2">Talent secondaire (si choix)</th>
+        <th>
+                <a class="waves-effect waves-light btn" onclick="createTalentsLine()"><i
+                class="material-icons">add_circle_outline</i></a>
+        </th>
+</tr>
+{% for talent in talents %}
+<tr>
+        <td class="unvisible" id="talentsID">{{talent['id']}}</td>
+        <td>
+                <label>Talent</label>
+                <select name="talent" id="talent{{talent['id']}}" onchange="talentSpecs(this)" required>
+                        {% if talent['tID'] == "" %}
+                                <option value="" selected>Sélectionner un talent...</option>        
+                        {% else %}
+                                <option value="">Sélectionner un talent...</option>        
+                        {% endif %}
+
+                        {% for t in listT %}
+                                {% if talent['tID'] == t.id %}
+                                        <option value="{{t.id}}" selected>{{t.name}}</option>
+                                {% else %}
+                                        <option value="{{t.id}}">{{t.name}}</option>
+                                {% endif %}
+                        {% endfor %}
+                </select>
+        </td>
+        {% if talent['specs'] == "" %}
+                <td class="unvisible width250">
+        {% else %}
+                <td class="width250">
+        {% endif %} 
+        
+                <label>Specs</label>
+                <input value="{{talent['specs']}}">
+        </td>
+
+        <td>
+                <label>Talent secondaire</label>
+                <select name="talent" id="talent{{talent['id']}}" onchange="talentSpecs(this)" required>
+                        {% if talent['tID2'] == "" %}
+                                <option value="" selected>Sélectionner un talent...</option>        
+                        {% else %}
+                                <option value="">Sélectionner un talent...</option>        
+                        {% endif %}
+
+                        {% for t in listT %}
+                                {% if talent['tID2'] == t.id %}
+                                        <option value="{{t.id}}" selected>{{t.name}}</option>
+                                {% else %}
+                                        <option value="{{t.id}}">{{t.name}}</option>
+                                {% endif %}
+                        {% endfor %}
+                </select>
+        </td>
+        {% if talent['specs2'] == "" %}
+                <td class="unvisible width250">
+        {% else %}
+                <td class="width250">
+        {% endif %} 
+        
+                <label>Specs</label>
+                <input value="{{talent['specs2']}}">
+        </td>
+        <td>
+                <a class="waves-effect waves-light btn modal-trigger" onclick="delTalentsLine(this)" id="{{talent['id']}}"><i
+                        class="material-icons">delete</i></a>
+        </td>
+</tr>
+{% endfor %}

@@ -11,6 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use App\Entity\Source;
+use App\Entity\Skills;
 use Doctrine\ORM\EntityManagerInterface;
 
 class TalentsType extends AbstractType
@@ -29,6 +30,12 @@ class TalentsType extends AbstractType
         foreach($sources as $s){
             $list[$s->getName()] = $s->getId();
         }
+        $skills = $this->em->getRepository(Skills::class)->findAll();
+        $listS = [];
+        foreach($skills as $s){
+            $listS[$s->getName()] = $s->getId();
+        }
+
         $builder
             ->add('name', TextType::class, [
                 'label' => 'Nom',
@@ -36,11 +43,18 @@ class TalentsType extends AbstractType
             ])
             ->add('Max', TextType::class, [
                 'label' => 'Niveau maximal du talent',
-                'row_attr' => ['class' => 'col s12']
+                'row_attr' => ['class' => 'col s6']
             ])
-            ->add('Test', TextType::class, ['row_attr' => ['class' => 'col s12']])
+            ->add('Test', TextType::class, ['row_attr' => ['class' => 'col s6']])
             ->add('minRoll', IntegerType::class, ['row_attr' => ['class' => 'col s6']])
             ->add('maxRoll', IntegerType::class, ['row_attr' => ['class' => 'col s6']])
+            ->add('idSkills', ChoiceType::class, [
+                'placeholder' => 'Sélectionner une compétence...',
+                'row_attr' => ['class' => 'col s12'],
+                'label' => 'Compétence à ajouter lors de la sélection du talent',
+                'choices' => $listS
+            ])
+            ->add('specs', TextType::class, ['row_attr' => ['class' => 'col s12']])
             ->add('description', TextareaType::class, ['row_attr' => ['class' => 'col s12']])
             ->add('idSource', ChoiceType::class, [
                 'placeholder' => 'Sélectionner une source...',

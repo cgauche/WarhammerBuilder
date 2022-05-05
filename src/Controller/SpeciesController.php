@@ -15,6 +15,10 @@ use App\Entity\CharacSpecies;
 use App\Entity\CareersSpecies;
 use App\Entity\Careers;
 use App\Entity\Characteristics;
+use App\Entity\Skills;
+use App\Entity\SkillsSpecies;
+use App\Entity\Talents;
+use App\Entity\TalentsSpecies;
 
 class SpeciesController extends AbstractController
 {
@@ -214,6 +218,8 @@ class SpeciesController extends AbstractController
         foreach ($careers as $c) {
             $idSPC = null;
             $value = false;
+            $minRoll = null;
+            $maxRoll = null;
 
             $spc = $doctrine->getRepository(CareersSpecies::class)->findOneBy([
                 'idSpecies' => $request->request->get('id'),
@@ -222,12 +228,16 @@ class SpeciesController extends AbstractController
             if($spc != null){
                 $idSPC = $spc->getId();
                 $value = true;
+                $minRoll = $spc->getMin();
+                $maxRoll = $spc->getMax();
             }
 
             $result[] = [
                 'id' => $idSPC == null ? "-" . $c->getId() : $idSPC,
                 'name' => $c->getName(),
-                'value' => $value
+                'value' => $value,
+                'minRoll' => $minRoll,
+                'maxRoll' => $maxRoll
             ];
         }
 
@@ -241,17 +251,174 @@ class SpeciesController extends AbstractController
         
         foreach ($data as $d) {
             if($d['value']){
+                $spc = $doctrine->getRepository(CareersSpecies::class)->find($d['ID']);
                 if($d['ID'] <= 0){
                     $spc = new CareersSpecies();
                     $spc->setIdCareers(abs($d['ID']));
                     $spc->setIdSpecies($request->request->get('id'));
-                    $entityManager->persist($spc);
                 }
+                $spc->setMin($d['minRoll']);
+                $spc->setMax($d['maxRoll']);
+                $entityManager->persist($spc);
             }else{
                 $spc = $doctrine->getRepository(CareersSpecies::class)->find($d['ID']);
                 if($spc != null)
                     $entityManager->remove($spc);
             }
+        }
+
+        $entityManager->flush();
+        return new JSONResponse(['result' => "OK"]);
+    }
+
+    /*************************************************************
+    * GESTION DES COMPETENCES PAR DEFAUT (SkillsSpecies)
+    *************************************************************/
+
+    #[Route('/admin/readSkillsSpecies', name : 'readSkillsSpecies', methods : ['POST'])]
+    public function readSkillsSpecies(ManagerRegistry $doctrine, Request $request){
+        $result = [];
+        $listS = $doctrine->getRepository(Skills::class)->findAll();
+        $SkillsSpecies = $doctrine->getRepository(SkillsSpecies::class)->findBy([
+            'idSpecies' => $request->request->get('id')
+        ]);
+
+        foreach ($SkillsSpecies as $sksp) {
+            $result[] = [
+                'id' => $sksp->getId(),
+                'sID' => $sksp->getIdSkills(),
+                'specs' => $sksp->getSpecs()
+            ];
+        }
+
+        return new Response($this->renderView('Species/tableSpeciesSkills.html.twig',[
+            'skills' => $result,
+            'listS' => $listS
+        ]));
+    }
+
+    #[Route('/admin/getAllSkills', name : 'getAllSkills', methods : ['POST'])]
+    public function getAllSkills(ManagerRegistry $doctrine, Request $request){
+        $result = [];
+        $skills = $doctrine->getRepository(Skills::class)->findAll();
+        foreach ($skills as $skill) {
+            $result[] = [
+                'id' => $skill->getId(),
+                'name' => $skill->getName()
+            ];
+        }
+        return new JSONResponse($result);
+    }
+
+    #[Route('/admin/deleteSkillsSpecies', name : 'deleteSkillsSpecies', methods : ['POST'])]
+    public function deleteSkillsSpecies(ManagerRegistry $doctrine, Request $request){
+        $sksp = $doctrine->getRepository(SkillsSpecies::class)->find($request->request->get('id'));
+        $entityManager = $doctrine->getManager();
+        $entityManager->remove($sksp);
+        $entityManager->flush(); 
+        return new JSONResponse(['result' => "OK"]);
+    }
+
+    #[Route('/admin/haveSpecs', name : 'haveSpecs', methods : ['POST'])]
+    public function haveSpecs(ManagerRegistry $doctrine, Request $request){
+        $skill = $doctrine->getRepository(Skills::class)->find($request->request->get('id'));
+        return new JSONResponse(['result' => $skill->getSpecs() != '']);
+    }
+
+    #[Route('/admin/saveSkillsSpecies', name : 'saveSkillsSpecies', methods : ['POST'])]
+    public function saveSkillsSpecies(ManagerRegistry $doctrine, Request $request){
+        $entityManager = $doctrine->getManager();
+        $data = json_decode($request->request->get('data'),true);
+        
+        foreach ($data as $d) {
+            if($d['id'] >= 0){
+                $sksp = $doctrine->getRepository(SkillsSpecies::class)->find($d['id']);
+            }else{
+                $sksp = new SkillsSpecies();
+            }
+            $sksp->setIdSkills($d['idS']);
+            $sksp->setIdSpecies($request->request->get('id'));
+            $sksp->setSpecs($d['specs']);
+            $entityManager->persist($sksp);
+        }
+
+        $entityManager->flush();
+        return new JSONResponse(['result' => "OK"]);
+    }
+
+    /*************************************************************
+    * GESTION DES TALENTS PAR DEFAUT (TalentsSpecies)
+    *************************************************************/
+
+    #[Route('/admin/readTalentsSpecies', name : 'readTalentsSpecies', methods : ['POST'])]
+    public function readTalentsSpecies(ManagerRegistry $doctrine, Request $request){
+        $result = [];
+        $listT = $doctrine->getRepository(Talents::class)->findAll();
+        $TalentsSpecies = $doctrine->getRepository(TalentsSpecies::class)->findBy([
+            'idSpecies' => $request->request->get('id')
+        ]);
+
+        foreach ($TalentsSpecies as $tsp) {
+            $result[] = [
+                'id' => $tsp->getId(),
+                'tID' => $tsp->getIdTalents(),
+                'specs' => $tsp->getSpecs(),
+                'tID2' => $tsp->getIdTalentsSec(),
+                'specs2' => $tsp->getSpecsSec()
+            ];
+        }
+
+        return new Response($this->renderView('Species/tableSpeciesTalents.html.twig',[
+            'talents' => $result,
+            'listT' => $listT
+        ]));
+    }
+    
+    #[Route('/admin/talentSpecs', name : 'talentSpecs', methods : ['POST'])]
+    public function talentSpecs(ManagerRegistry $doctrine, Request $request){
+        $talent = $doctrine->getRepository(Talents::class)->find($request->request->get('id'));
+        return new JSONResponse(['result' => $talent->getSpecs() != '']);
+    }
+
+    #[Route('/admin/getAllTalents', name : 'getAllTalents', methods : ['POST'])]
+    public function getAllTalents(ManagerRegistry $doctrine, Request $request){
+        $result = [];
+        $talents = $doctrine->getRepository(Talents::class)->findAll();
+        foreach ($talents as $talent) {
+            $result[] = [
+                'id' => $talent->getId(),
+                'name' => $talent->getName()
+            ];
+        }
+        return new JSONResponse($result);
+    }
+
+    #[Route('/admin/deleteTalentsSpecies', name : 'deleteTalentsSpecies', methods : ['POST'])]
+    public function deleteTalentsSpecies(ManagerRegistry $doctrine, Request $request){
+        $tsp = $doctrine->getRepository(TalentsSpecies::class)->find($request->request->get('id'));
+        $entityManager = $doctrine->getManager();
+        $entityManager->remove($tsp);
+        $entityManager->flush(); 
+        return new JSONResponse(['result' => "OK"]);
+    }
+
+    #[Route('/admin/saveTalentsSpecies', name : 'saveTalentsSpecies', methods : ['POST'])]
+    public function saveTalentsSpecies(ManagerRegistry $doctrine, Request $request){
+        $entityManager = $doctrine->getManager();
+        $data = json_decode($request->request->get('data'),true);
+        
+        foreach ($data as $d) {
+            if($d['id'] >= 0){
+                $tsp = $doctrine->getRepository(TalentsSpecies::class)->find($d['id']);
+            }else{
+                $tsp = new TalentsSpecies();
+            }
+            $tsp->setIdSpecies($request->request->get('id'));
+            $tsp->setIdTalents($d['idS']);
+            $tsp->setSpecs($d['specs']);
+            $tsp->setIdTalentsSec($d['idS2']);
+            $tsp->setSpecsSec($d['specs2']);
+            $entityManager->persist($tsp);
         }
 
         $entityManager->flush();

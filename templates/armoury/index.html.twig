@@ -3,18 +3,11 @@
 {% block title %}Edition des équipements{% endblock %}
 
 {% block body %}
-<!-- Override graphic framework, do some shit on select input -->
-<style>
-    select {
-        display: flex;
-    }
-</style>
-
-
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         var elems = document.querySelectorAll('.modal');
         M.Modal.init(elems, { dismissible: false });
+        M.FormSelect.init(document.querySelectorAll('select'),{dropdownOptions:{container:document.body}});
     });
 
     window.onload = loadTable;

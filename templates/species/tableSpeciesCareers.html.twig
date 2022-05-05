@@ -2,6 +2,7 @@
         <th class="unvisible"></th>
         <th>Nom</th>
         <th>Accessible ?</th>
+        <th colspan="2">Jet alétoire</th>
 </tr>
 {% for career in careers %}
 <tr>
@@ -21,6 +22,16 @@
                         </label>
                 </div>
         </td>
+        <td>
+                <label for="min{{career['id']}}">Min</label>
+                <input type="number" id="min{{career['id']}}" value="{{career['minRoll']}}">
+        </td>
+        <td>
+                <label for="max{{career['id']}}">Max</label>
+                <input type="number" id="max{{career['id']}}" value="{{career['maxRoll']}}">
+        </td>
+        <td>
 
+        </td>
 </tr>
 {% endfor %}

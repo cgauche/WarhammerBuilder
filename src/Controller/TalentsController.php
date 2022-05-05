@@ -59,6 +59,10 @@ class TalentsController extends AbstractController
             $Talents->setMaxRoll($maxRoll == '' ? null : $maxRoll);
             $test = $request->request->get('test');
             $Talents->setTest($test == '' ? null : $test);
+            $idSkills = $request->request->get('idSkills');
+            $Talents->setIdSkills($idSkills == '' ? null : $idSkills);
+            $specs = $request->request->get('specs');
+            $Talents->setSpecs($specs == '' ? null : $specs);
             $desc = $request->request->get('description');
             $Talents->setDescription($desc == '' ? null : $desc);
             $idSource = $request->request->get('idSource');
@@ -99,6 +103,10 @@ class TalentsController extends AbstractController
             $Talents->setMaxRoll($maxRoll == '' ? null : $maxRoll);
             $test = $request->request->get('test');
             $Talents->setTest($test == '' ? null : $test);
+            $idSkills = $request->request->get('idSkills');
+            $Talents->setIdSkills($idSkills == '' ? null : $idSkills);
+            $specs = $request->request->get('specs');
+            $Talents->setSpecs($specs == '' ? null : $specs);
             $desc = $request->request->get('description');
             $Talents->setDescription($desc == '' ? null : $desc);
             $idSource = $request->request->get('idSource');

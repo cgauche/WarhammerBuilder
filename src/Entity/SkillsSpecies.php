@@ -2,13 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\CareersSpeciesRepository;
+use App\Repository\SkillsSpeciesRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
  */
-class CareersSpecies
+class SkillsSpecies
 {
     /**
      * @ORM\Id
@@ -20,7 +20,7 @@ class CareersSpecies
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    private $idCareers;
+    private $idSkills;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
@@ -28,28 +28,23 @@ class CareersSpecies
     private $idSpecies;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $min;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $max;
+    private $specs;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getIdCareers(): ?int
+    public function getIdSkills(): ?int
     {
-        return $this->idCareers;
+        return $this->idSkills;
     }
 
-    public function setIdCareers(?int $idCareers): self
+    public function setIdSkills(?int $idSkills): self
     {
-        $this->idCareers = $idCareers;
+        $this->idSkills = $idSkills;
 
         return $this;
     }
@@ -66,26 +61,14 @@ class CareersSpecies
         return $this;
     }
 
-    public function getMin(): ?int
+    public function getSpecs(): ?string
     {
-        return $this->min;
+        return $this->specs;
     }
 
-    public function setMin(?int $min): self
+    public function setSpecs(?string $specs): self
     {
-        $this->min = $min;
-
-        return $this;
-    }
-
-    public function getMax(): ?int
-    {
-        return $this->max;
-    }
-
-    public function setMax(?int $max): self
-    {
-        $this->max = $max;
+        $this->specs = $specs;
 
         return $this;
     }
