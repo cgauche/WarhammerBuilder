@@ -123,6 +123,150 @@
         M.Modal.getInstance(elem).open()
     }
 
+
+    /*************************************************************
+    * GESTION DES POSSESSIONS PAR DEFAUT (ClassTrapping)
+    *************************************************************/   
+    function openTrapping(id){
+        $.ajax({
+            url: "readClassTrapping",
+            data: {
+                id: id
+            },
+            type: "POST",
+            dataType: "html",
+            success: function (data, status) {
+                $("#tableTrapping").html(data);
+                M.FormSelect.init(document.querySelectorAll('select'),{dropdownOptions:{container:document.body}});
+            },
+            error: function (error, status, errorThrow) {
+                console.log(status + "\n" + errorThrow)
+            },
+            complete: function () {
+                var elem = document.getElementById('modalTrapping')
+                document.getElementsByClassName('modButtonTrapping')[0].setAttribute('id', id)
+                M.Modal.getInstance(elem).open()
+            }
+        })
+    }
+
+    function createTrappingLine(){
+        var row = document.getElementById('tableTrapping').insertRow(-1)
+        var cellID = row.insertCell(-1)
+        cellID.setAttribute('class','unvisible')
+        cellID.innerHTML = '-1'
+
+        var cellTrapping = row.insertCell(-1)
+        var labelS = document.createElement('label')
+        labelS.innerHTML = 'Item'
+        var TrappingList = document.createElement('select')
+        TrappingList.setAttribute('name',"trapping")
+        var opt = document.createElement('option')
+        opt.innerHTML = 'Sélectionner un item ...'
+        opt.setAttribute('value','')
+        TrappingList.append(opt)
+        $.ajax({
+            url: "getAllTrapping",
+            type: "POST",
+            dataType: "JSON",
+            success: function (data, status) {
+                console.log(data)
+                if(data.length != 0){
+                    data.forEach(tab => {
+                        if(tab.data.length > 0){
+                            var optGroup = document.createElement('optgroup')
+                            optGroup.setAttribute('label', tab.name)
+                            for(var i = 0; i < tab.data.length; i++){
+                                opt = document.createElement('option')
+                                opt.innerHTML = tab.data[i].name
+                                opt.setAttribute('value',tab.data[i].id)
+                                optGroup.append(opt)
+                            }
+                            TrappingList.append(optGroup)
+                        }
+                    })
+                }
+
+                cellTrapping.append(labelS)
+                cellTrapping.append(TrappingList)
+                
+                var cellQte = row.insertCell(-1)
+                var labelQte = document.createElement('label')
+                labelQte.innerHTML = 'Quantité'
+                var inputQte = document.createElement('input')
+                cellQte.append(labelQte)
+                cellQte.append(inputQte)
+
+                var cellButton = row.insertCell(-1)
+                cellButton.setAttribute('style','text-align:right')
+                var buttonDel = document.createElement('a')
+                buttonDel.setAttribute('class', 'waves-effect waves-light btn')
+                buttonDel.setAttribute('onclick','delTrappingLine(this)')
+                var icon = document.createElement('i')
+                icon.innerHTML = 'delete'
+                icon.setAttribute('class','material-icons')
+                buttonDel.append(icon)
+                cellButton.append(buttonDel)
+
+                M.FormSelect.init(document.querySelectorAll('select'),{dropdownOptions:{container:document.body}});
+            },
+        })
+    }
+
+    function delTrappingLine(button){
+        var row = button.parentElement.parentElement
+        var id = parseInt(row.children[0].innerHTML)
+        if(id > 0 && id != undefined && id != null){
+            $.ajax({
+                url : 'deleteClassTrapping',
+                data : {
+                    id : id
+                },
+                type : 'POST',
+                dataType : 'JSON',
+                success : function() {
+                    row.remove()
+                }
+            })
+        }else{
+            row.remove()
+        }
+    }
+
+    function saveTrapping(id){
+        var tableRow = document.getElementById("tableTrapping").getElementsByTagName('tr')
+        var data = {}
+        for (var i = 1; i < tableRow.length; i++) {
+            data[i] = {}
+            data[i]['id'] = tableRow[i].children[0].textContent //IDLine
+
+            var tmp = tableRow[i].children[1].children[1].getElementsByTagName("select")[0].value
+            switch(tmp.split("/")[0]){ //type
+                case 'T' : data[i]['type'] = 0 ; break
+                case 'B' : data[i]['type'] = 1 ; break
+                case 'A' : data[i]['type'] = 2 ; break
+            }
+            data[i]['idT'] = parseInt(tmp.split("/")[1]) //IDTrapping
+            data[i]['qte'] = tableRow[i].children[2].children[1].value //qte
+        }
+
+        $.ajax({
+            url: "saveClassTrapping",
+            data: {
+                id: id,
+                data: JSON.stringify(data)
+            },
+            type: "POST",
+            dataType: "json",
+            success: function (data, status) {
+                M.toast({ html: 'Possessions par défaut enregistrés avec succès !' })
+                M.Modal.getInstance(document.getElementById('modalTrapping')).close()
+            },
+            error: function (error, status, errorThrow) {
+                console.log(status + "\n" + errorThrow)
+            }
+        })
+    }
 </script>
 <div class="container">
     <div class="section">
@@ -157,6 +301,20 @@
         <div class="modal-footer">
             <a onclick="delClasses(this.id)" class="modal-close wave-effect wave-green btn-flat delButton">Oui</a>
             <a href="#!" class="modal-close wave-effect wave-red btn-flat">Non</a>
+        </div>
+    </div>
+
+    <!-- Modal modalTrapping -->
+    <div id="modalTrapping" class="modal">
+        <div class="modal-content">
+            <h4 id="titleTrapping">Possession par défaut de la classe</h4>
+            <div class="input-field">
+                <table id="tableTrapping"></table>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a onclick="saveTrapping(this.id)" class="wave-effect wave-green btn-flat modButtonTrapping">Enregistrer</a>
+            <a class="modal-close wave-effect wave-red btn-flat">Annuler</a>
         </div>
     </div>
 </div>

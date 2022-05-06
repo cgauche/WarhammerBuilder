@@ -1,0 +1,66 @@
+<tr>
+        <th class="unvisible"></th>
+        <th>Nom</th>
+        <th>Quantité</th>
+        <th style="text-align:right">
+                <a class="waves-effect waves-light btn" onclick="createTrappingLine()"><i
+                        class="material-icons">add_circle_outline</i></a>
+        </th>
+</tr>
+{% for t in trappings %}
+        <tr>
+                <td class="unvisible" id="trappingID">{{t['id']}}</td>
+                <td>
+                        <label>Item</label>
+                        <select name="trapping" id="trapping{{t['id']}}">
+                                {% if t['tID'] == "" %}
+                                        <option value="" selected>Sélectionner un item...</option>        
+                                {% else %}
+                                        <option value="">Sélectionner un item...</option>        
+                                {% endif %}
+
+                                {% if listT is not empty %}
+                                        <optgroup label="Items">
+                                                {% for trapping in listT %}
+                                                        {% if t['tID'] == trapping.id and t['type'] == 0 %}
+                                                                <option value="T/{{trapping.id}}" selected>{{trapping.name}}</option>
+                                                        {% else %}
+                                                                <option value="T/{{trapping.id}}">{{trapping.name}}</option>
+                                                        {% endif %}
+                                                {% endfor %}
+                                        </optgroup>
+                                {% endif %}
+                                {% if listBC is not empty %}
+                                        <optgroup label="Sacs">
+                                                {% for bag in listBC %}
+                                                        {% if t['tID'] == bag.id and t['type'] == 1 %}
+                                                                <option value="B/{{bag.id}}" selected>{{bag.name}}</option>
+                                                        {% else %}
+                                                                <option value="B/{{bag.id}}">{{bag.name}}</option>
+                                                        {% endif %}
+                                                {% endfor %}
+                                        </optgroup>
+                                {% endif %}
+                                {% if listA is not empty %}
+                                        <optgroup label="Armes & Armures">
+                                                {% for armoury in listA %}
+                                                        {% if t['tID'] == armoury.id and t['type'] == 2 %}
+                                                                <option value="A/{{armoury.id}}" selected>{{armoury.name}}</option>
+                                                        {% else %}
+                                                                <option value="A/{{armoury.id}}">{{armoury.name}}</option>
+                                                        {% endif %}
+                                                {% endfor %}
+                                        </optgroup>
+                                {% endif %}
+                        </select>
+                </td>
+                <td>
+                        <label>Quantité</label>
+                        <input value="{{t['qte']}}">
+                </td>
+                <td style="text-align:right">
+                        <a class="waves-effect waves-light btn" onclick="delTrappingLine(this)" id="{{t['id']}}"><i
+                                class="material-icons">delete</i></a>
+                </td>
+        </tr>
+{% endfor %}

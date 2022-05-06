@@ -17,8 +17,10 @@
             type: "POST",
             dataType: "html",
             success: function (data, status) {
-                if ($('#table').length == 0) {
+                if (document.getElementById('table') == null) {
+                    $('#main').empty()
                     $('#main').append("<table id='table'></table>")
+                    $('#back').attr('href', '/admin/home').attr('onclick', '')
                 }
                 $('#table').html(data)
             },
@@ -40,6 +42,7 @@
                 $('#main').html(data)
                 $('#back').attr('href', '').attr('onclick', 'loadTable()')
                 loadTableWA(id);
+                M.FormSelect.init(document.querySelectorAll('select'),{dropdownOptions:{container:document.body}});
             },
             error: function (error, status, errorThrow) {
                 console.log(status + "\n" + errorThrow)
@@ -96,7 +99,6 @@
                     dataType: "json",
                     success: function (data, status) {
                         M.toast({ html: 'Équipement modifié avec succès !' })
-                        M.Modal.getInstance(document.getElementById('modalArmoury')).close()
                         loadTable();
                     },
                     error: function (error, status, errorThrow) {
@@ -125,7 +127,6 @@
                     dataType: "json",
                     success: function (data, status) {
                         M.toast({ html: 'Équipement créé avec succès !' })
-                        M.Modal.getInstance(document.getElementById('modalArmoury')).close()
                         loadTable();
                     },
                     error: function (error, status, errorThrow) {
