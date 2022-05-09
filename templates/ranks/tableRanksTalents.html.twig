@@ -1,7 +1,6 @@
 <tr>
         <th class="unvisible"></th>
         <th colspan="2">Talent</th>
-        <th colspan="2">Talent secondaire (si choix)</th>
         <th>
                 <a class="waves-effect waves-light btn" onclick="createTalentsLine()"><i
                 class="material-icons">add_circle_outline</i></a>
@@ -36,34 +35,6 @@
         
                 <label>Specs</label>
                 <input value="{{talent['specs']}}" class='autocomplete'>
-        </td>
-
-        <td>
-                <label>Talent secondaire</label>
-                <select name="talent" id="talent{{talent['id']}}" onchange="talentSpecs(this)" required>
-                        {% if talent['tID2'] == "" %}
-                                <option value="" selected>Sélectionner un talent...</option>        
-                        {% else %}
-                                <option value="">Sélectionner un talent...</option>        
-                        {% endif %}
-
-                        {% for t in listT %}
-                                {% if talent['tID2'] == t.id %}
-                                        <option value="{{t.id}}" selected>{{t.name}}</option>
-                                {% else %}
-                                        <option value="{{t.id}}">{{t.name}}</option>
-                                {% endif %}
-                        {% endfor %}
-                </select>
-        </td>
-        {% if talent['specs2'] == "" %}
-                <td class="unvisible width250">
-        {% else %}
-                <td class="width250">
-        {% endif %} 
-        
-                <label>Specs</label>
-                <input value="{{talent['specs2']}}" class='autocomplete'>
         </td>
         <td>
                 <a class="waves-effect waves-light btn modal-trigger" onclick="delTalentsLine(this)" id="{{talent['id']}}"><i

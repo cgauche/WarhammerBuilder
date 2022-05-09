@@ -37,6 +37,11 @@ class TrappingRank
      */
     private $specs;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $Qte;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -86,6 +91,18 @@ class TrappingRank
     public function setSpecs(?string $specs): self
     {
         $this->specs = $specs;
+
+        return $this;
+    }
+
+    public function getQte(): ?string
+    {
+        return $this->Qte;
+    }
+
+    public function setQte(?string $Qte): self
+    {
+        $this->Qte = $Qte;
 
         return $this;
     }

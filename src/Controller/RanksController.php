@@ -10,8 +10,16 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Form\RanksType;
 use App\Entity\Ranks;
+use App\Entity\TrappingRank;
 use App\Entity\Careers;
 use App\Entity\Characteristics;
+use App\Entity\Skills;
+use App\Entity\SkillsRank;
+use App\Entity\Talents;
+use App\Entity\TalentsRank;
+use App\Entity\Trapping;
+use App\Entity\BagsContainers;
+use App\Entity\Armoury;
 
 class RanksController extends AbstractController
 {
@@ -128,6 +136,178 @@ class RanksController extends AbstractController
         $entityManager = $doctrine->getManager();
         $entityManager->remove($Ranks);
         $entityManager->flush(); 
+        return new JSONResponse(['result' => "OK"]);
+    }
+
+    /*************************************************************
+    * GESTION DES COMPETENCES POSSIBLES (SkillsRank)
+    *************************************************************/
+
+    #[Route('/admin/readSkillsRanks', name : 'readSkillsRanks', methods : ['POST'])]
+    public function readSkillsRanks(ManagerRegistry $doctrine, Request $request){
+        $result = [];
+        $listS = $doctrine->getRepository(Skills::class)->findAll();
+        $SkillsRank = $doctrine->getRepository(SkillsRank::class)->findBy([
+            'idRanks' => $request->request->get('id')
+        ]);
+
+        foreach ($SkillsRank as $sksp) {
+            $result[] = [
+                'id' => $sksp->getId(),
+                'sID' => $sksp->getIdSkills(),
+                'specs' => $sksp->getSpecs()
+            ];
+        }
+
+        return new Response($this->renderView('ranks/tableRanksSkills.html.twig',[
+            'skills' => $result,
+            'listS' => $listS
+        ]));
+    }
+
+    #[Route('/admin/deleteSkillsRanks', name : 'deleteSkillsRanks', methods : ['POST'])]
+    public function deleteSkillsRanks(ManagerRegistry $doctrine, Request $request){
+        $sksp = $doctrine->getRepository(SkillsRank::class)->find($request->request->get('id'));
+        $entityManager = $doctrine->getManager();
+        $entityManager->remove($sksp);
+        $entityManager->flush(); 
+        return new JSONResponse(['result' => "OK"]);
+    }
+
+    #[Route('/admin/saveSkillsRanks', name : 'saveSkillsRanks', methods : ['POST'])]
+    public function saveSkillsRanks(ManagerRegistry $doctrine, Request $request){
+        $entityManager = $doctrine->getManager();
+        $data = json_decode($request->request->get('data'),true);
+        
+        foreach ($data as $d) {
+            if($d['id'] >= 0){
+                $sksp = $doctrine->getRepository(SkillsRank::class)->find($d['id']);
+            }else{
+                $sksp = new SkillsRank();
+            }
+            $sksp->setIdSkills($d['idS']);
+            $sksp->setIdRanks($request->request->get('id'));
+            $sksp->setSpecs($d['specs']);
+            $entityManager->persist($sksp);
+        }
+
+        $entityManager->flush();
+        return new JSONResponse(['result' => "OK"]);
+    }
+
+    /*************************************************************
+    * GESTION DES TALENTS POSSIBLES (TalentsRank)
+    *************************************************************/
+
+    #[Route('/admin/readTalentsRanks', name : 'readTalentsRanks', methods : ['POST'])]
+    public function readTalentsRanks(ManagerRegistry $doctrine, Request $request){
+        $result = [];
+        $listT = $doctrine->getRepository(Talents::class)->findAll();
+        $TalentsRank = $doctrine->getRepository(TalentsRank::class)->findBy([
+            'idRanks' => $request->request->get('id')
+        ]);
+
+        foreach ($TalentsRank as $tsp) {
+            $result[] = [
+                'id' => $tsp->getId(),
+                'tID' => $tsp->getIdTalents(),
+                'specs' => $tsp->getSpecs()
+            ];
+        }
+
+        return new Response($this->renderView('ranks/tableRanksTalents.html.twig',[
+            'talents' => $result,
+            'listT' => $listT
+        ]));
+    }
+
+    #[Route('/admin/deleteTalentsRanks', name : 'deleteTalentsRanks', methods : ['POST'])]
+    public function deleteTalentsRanks(ManagerRegistry $doctrine, Request $request){
+        $tsp = $doctrine->getRepository(TalentsRank::class)->find($request->request->get('id'));
+        $entityManager = $doctrine->getManager();
+        $entityManager->remove($tsp);
+        $entityManager->flush(); 
+        return new JSONResponse(['result' => "OK"]);
+    }
+
+    #[Route('/admin/saveTalentsRanks', name : 'saveTalentsRanks', methods : ['POST'])]
+    public function saveTalentsRanks(ManagerRegistry $doctrine, Request $request){
+        $entityManager = $doctrine->getManager();
+        $data = json_decode($request->request->get('data'),true);
+        
+        foreach ($data as $d) {
+            if($d['id'] >= 0){
+                $tsp = $doctrine->getRepository(TalentsRank::class)->find($d['id']);
+            }else{
+                $tsp = new TalentsRank();
+            }
+            $tsp->setIdRanks($request->request->get('id'));
+            $tsp->setIdTalents($d['idS']);
+            $tsp->setSpecs($d['specs']);
+            $entityManager->persist($tsp);
+        }
+
+        $entityManager->flush();
+        return new JSONResponse(['result' => "OK"]);
+    }
+
+    /*************************************************************
+    * GESTION DES POSSESSIONS (TrappingRank)
+    *************************************************************/
+
+    #[Route('/admin/readRanksTrapping', name : 'readRanksTrapping', methods : ['POST'])]
+    public function readRanksTrapping(ManagerRegistry $doctrine, Request $request){
+        $listT = $doctrine->getRepository(Trapping::class)->findAll();
+        $listBC = $doctrine->getRepository(BagsContainers::class)->findAll();
+        $listA = $doctrine->getRepository(Armoury::class)->findAll();
+        
+        $result = [];
+        $ClassTrapping = $doctrine->getRepository(TrappingRank::class)->findBy(['idRanks' => $request->request->get('id')]);
+        foreach ($ClassTrapping as $ct) {
+            $result[] = [
+                'id' => $ct->getId(),
+                'type' => $ct->getType(),
+                'tID' => $ct->getIdTrapping(),
+                'qte' => $ct->getQte()
+            ];
+        }
+
+        return new Response($this->renderView('ranks/tableRanksTrapping.html.twig',[
+            'trappings' => $result,
+            'listT' => $listT,
+            'listBC' => $listBC,
+            'listA' => $listA
+        ]));
+    }
+
+    #[Route('/admin/deleteRankTrapping', name : 'deleteRankTrapping', methods : ['POST'])]
+    public function deleteRankTrapping(ManagerRegistry $doctrine, Request $request){
+        $ct = $doctrine->getRepository(TrappingRank::class)->find($request->request->get('id'));
+        $entityManager = $doctrine->getManager();
+        $entityManager->remove($ct);
+        $entityManager->flush(); 
+        return new JSONResponse(['result' => "OK"]);
+    }
+
+    #[Route('/admin/saveRankTrapping', name : 'saveRankTrapping', methods : ['POST'])]
+    public function saveRankTrapping(ManagerRegistry $doctrine, Request $request){
+        $entityManager = $doctrine->getManager();
+        $data = json_decode($request->request->get('data'),true);
+        
+        foreach ($data as $d) {
+            if($d['id'] >= 0){
+                $ct = $doctrine->getRepository(TrappingRank::class)->find($d['id']);
+            }else{
+                $ct = new TrappingRank();
+            }
+            $ct->setIdRanks($request->request->get('id'));
+            $ct->setIdTrapping($d['idT']);
+            $ct->setType($d['type']);
+            $ct->setQte($d['qte']);
+            $entityManager->persist($ct);
+        }
+
+        $entityManager->flush();
         return new JSONResponse(['result' => "OK"]);
     }
 }
