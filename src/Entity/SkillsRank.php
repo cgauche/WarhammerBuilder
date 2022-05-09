@@ -2,13 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\CareerTrappingRepository;
+use App\Repository\SkillsRankRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
  */
-class CareerTrapping
+class SkillsRank
 {
     /**
      * @ORM\Id
@@ -20,55 +20,55 @@ class CareerTrapping
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    private $idTrapping;
+    private $idRanks;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    private $idCareer;
+    private $idSkills;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $Qte;
+    private $specs;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getIdTrapping(): ?int
+    public function getIdRanks(): ?int
     {
-        return $this->idTrapping;
+        return $this->idRanks;
     }
 
-    public function setIdTrapping(?int $idTrapping): self
+    public function setIdRanks(?int $idRanks): self
     {
-        $this->idTrapping = $idTrapping;
+        $this->idRanks = $idRanks;
 
         return $this;
     }
 
-    public function getIdCareer(): ?int
+    public function getIdSkills(): ?int
     {
-        return $this->idCareer;
+        return $this->idSkills;
     }
 
-    public function setIdCareer(?int $idCareer): self
+    public function setIdSkills(?int $idSkills): self
     {
-        $this->idCareer = $idCareer;
+        $this->idSkills = $idSkills;
 
         return $this;
     }
 
-    public function getQte(): ?string
+    public function getSpecs(): ?string
     {
-        return $this->Qte;
+        return $this->specs;
     }
 
-    public function setQte(?string $Qte): self
+    public function setSpecs(?string $specs): self
     {
-        $this->Qte = $Qte;
+        $this->specs = $specs;
 
         return $this;
     }

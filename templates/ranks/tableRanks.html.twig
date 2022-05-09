@@ -1,0 +1,33 @@
+<tr>
+        <th>Nom</th>
+        <th>Status</th>
+        <th>Caractéristique principale</th>
+        <th style="text-align:right">
+                <a class="waves-effect waves-light btn" onclick="openForm()"><i
+                        class="material-icons">add_circle_outline</i></a>
+        </th>
+</tr>
+{% for rank in ranks %}
+        <tr>
+                <td>{{rank['name']}}</td>
+                <td>{{rank['status']}}</td>
+                <td>{{rank['charac']}}</td>
+                <td style="text-align:right">
+                        <a class="waves-effect waves-light btn" onclick="openForm(this.id)" id="{{rank.id}}"><i
+                                class="material-icons">border_color</i></a>
+                        <a class="waves-effect waves-light btn" onclick="delMsg(this.id)" id="{{rank.id}}"><i
+                                class="material-icons">delete</i></a>
+                        <a class="waves-effect waves-light btn dropdown-trigger" data-target='{{"option#{rank['id']}"}}'><i
+                                class="material-icons">more_vert</i></a>
+                </td>
+                <td>
+                        <!-- Dropdown Structure -->
+                        <ul id='{{"option#{rank['id']}"}}' class='dropdown-content option'>
+                                <li class="divider" tabindex="-1">Éditer</li>
+                                <li><a onclick="openSkills(this.id)" id="{{rank['id']}}">Compétences possibles</a></li>
+                                <li><a onclick="openTalents(this.id)" id="{{rank['id']}}">Talents possibles</a></li>
+                                <li><a onclick="openTrapping(this.id)" id="{{rank['id']}}">Possessions</a></li>
+                        </ul>
+                </td>
+        </tr>
+{% endfor %}

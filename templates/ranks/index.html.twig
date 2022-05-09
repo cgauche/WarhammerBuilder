@@ -1,0 +1,183 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edition des rangs{% endblock %}
+
+{% block body %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var elems = document.querySelectorAll('.modal');
+        var instances = M.Modal.init(elems, { dismissible: false });
+    });
+
+    window.onload = loadTable;
+    function loadTable() {
+        var url = '{{ path("readCareersRanks") }}'
+        $.ajax({
+            url : url,
+            data : { id : document.getElementById('idCareers').innerHTML },
+            type : "POST",
+            dataType : "html",
+            success : function(data, status){
+                $("#table").html(data);
+            },
+            error : function(error, status, errorThrow){
+                console.log(status + "\n" + errorThrow)
+            }
+        })
+    }
+
+    function openForm(id = '') {
+        var url = '{{ path("readRanks") }}'
+        $.ajax({
+            url : url,
+            data : {
+                id : id
+            },
+            type : "POST",
+            dataType : "html",
+            success : function(data, status){
+                $("#formRanks").html(data);
+                M.FormSelect.init(document.querySelectorAll('select'),{dropdownOptions:{container:document.body}});
+            },
+            error : function(error, status, errorThrow){
+                console.log(status + "\n" + errorThrow)
+            },  
+            complete : function (){
+                var elem = document.getElementById('modalRanks')
+                document.getElementsByClassName('modButton')[0].setAttribute('id',id)
+                M.Modal.getInstance(elem).open()
+            }
+        })
+    }
+
+    function saveRanks(id) {
+        var name = document.getElementById("ranks_name").value
+        var status = document.getElementById("ranks_status").value
+        var idCharac = document.getElementById("ranks_idCharac").value
+        var idCharac2 = document.getElementById("ranks_idCharac2").value
+        var idCharac3 = document.getElementById("ranks_idCharac3").value
+        var idSource = document.getElementById("ranks_idSource").value
+        
+        if(name == '') {
+            M.toast({html : 'Veuillez saisir un nom pour le rang.', classes : 'red lighten-1'})
+        }else if(status == ''){
+            M.toast({html : 'Veuillez sélectionner un status pour le rang.', classes : 'red lighten-1'})
+        }else if(idCharac == ''){
+            M.toast({html : 'Veuillez sélectionner une caractéristique principale pour le rang.', classes : 'red lighten-1'})
+        }else{
+            if( id != ''){
+                var url = '{{ path("updateRanks") }}'
+                $.ajax({
+                    url : url,
+                    data : {
+                        id : id,
+                        idCharac : idCharac,
+                        idCharac2 : idCharac2,
+                        idCharac3 : idCharac3,
+                        name : name,
+                        status : status,
+                        idSource : idSource
+                    },
+                    type : "POST",
+                    dataType : "json",
+                    success : function(data, status){
+                        M.toast({html : 'Rang modifié avec succès !'})
+                        M.Modal.getInstance(document.getElementById('modalRanks')).close()
+                        loadTable();
+                    },
+                    error : function(error, status, errorThrow){
+                        console.log(status + "\n" + errorThrow)
+                    }
+                })
+            }else{
+                var url = '{{ path("createRanks") }}'
+                $.ajax({
+                    url : url,
+                    data : {
+                        id : document.getElementById('idCareers').innerHTML,
+                        idCharac : idCharac,
+                        idCharac2 : idCharac2,
+                        idCharac3 : idCharac3,
+                        name : name,
+                        status : status,
+                        idSource : idSource
+                    },
+                    type : "POST",
+                    dataType : "json",
+                    success : function(data, status){
+                        M.toast({html : 'Rang créé avec succès !'})
+                        M.Modal.getInstance(document.getElementById('modalRanks')).close()
+                        loadTable();
+                    },
+                    error : function(error, status, errorThrow){
+                        console.log(status + "\n" + errorThrow)
+                    }
+                })
+            }
+        }
+        
+    }
+
+    function delRanks(id) {
+        var url = '{{ path("deleteRanks") }}'
+        $.ajax({
+            url : "deleteRanks",
+            data : {
+                id : id
+            },
+            type : "POST",
+            dataType : "json",
+            success : function(data, status){
+                M.toast({html : 'Rang supprimé avec succès !'})
+                loadTable();
+            },
+            error : function(error, status, errorThrow){
+                console.log(status + "\n" + errorThrow)
+            }
+        })
+    }
+
+    function delMsg(id) {
+        var elem = $('#delRanks')
+        document.getElementsByClassName('delButton')[0].setAttribute('id',id)
+        M.Modal.getInstance(elem).open()
+    }
+
+</script>
+<div class="container">
+    <div class="section">
+        <h3 style="text-align:center">Edition des rangs de la classe {{nameC}}</h3>
+    </div>
+    <span class='unvisible' id='idCareers'>{{id}}</span>
+    <a class="wave-effect wave-light btn" href="{{path('editCareers')}}">Retour</a>
+    <table id='table'></table>
+
+    <!-- Modal modalRanks -->
+    <div id="modalRanks" class="modal">
+        <div class="modal-content">
+            <h4 id="formTitle">Rang</h4>
+            <div id='formRanks' class="input-field"></div>
+        </div>
+        <div class="modal-footer">
+            <a onclick="saveRanks(this.id)" class="wave-effect wave-green btn-flat modButton">Enregistrer</a>
+            <a href="#!" class="modal-close wave-effect wave-red btn-flat">Annuler</a>
+        </div>
+    </div>
+
+    <!-- Modal deleteRanks -->
+    <div id="delRanks" class="modal">
+        <div class="modal-content">
+            <h4>Attention !</h4>
+            <p>
+                Cette suppression est irréversible.
+                <br>
+                Voulez-vous continuer ?
+            </p>
+        </div>
+        <div class="modal-footer">
+            <a onclick="delRanks(this.id)" class="modal-close wave-effect wave-green btn-flat delButton">Oui</a>
+            <a href="#!" class="modal-close wave-effect wave-red btn-flat">Non</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
