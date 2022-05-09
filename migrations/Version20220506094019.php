@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20220429133550 extends AbstractMigration
+final class Version20220506094019 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -20,16 +20,12 @@ final class Version20220429133550 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('DROP INDEX FK_TALENT_SKILL ON talents');
-        $this->addSql('DROP INDEX FK_TALENT_CARAC ON talents');
-        $this->addSql('ALTER TABLE talents DROP ID_Skill, DROP ID_Caracteristics');
+        $this->addSql('DROP TABLE career_trapping');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE talents ADD ID_Skill INT DEFAULT NULL, ADD ID_Caracteristics INT DEFAULT NULL');
-        $this->addSql('CREATE INDEX FK_TALENT_SKILL ON talents (ID_Skill)');
-        $this->addSql('CREATE INDEX FK_TALENT_CARAC ON talents (ID_Caracteristics)');
+        $this->addSql('CREATE TABLE career_trapping (id INT AUTO_INCREMENT NOT NULL, id_trapping INT DEFAULT NULL, id_career INT DEFAULT NULL, qte VARCHAR(255) CHARACTER SET utf8mb4 DEFAULT NULL COLLATE `utf8mb4_unicode_ci`, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB COMMENT = \'\' ');
     }
 }

@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20220429122812 extends AbstractMigration
+final class Version20220509093427 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -20,12 +20,12 @@ final class Version20220429122812 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE skills CHANGE Specs Specs VARCHAR(255) DEFAULT NULL');
+        $this->addSql('ALTER TABLE trapping_rank ADD qte VARCHAR(255) DEFAULT NULL');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE skills CHANGE Specs Specs TINYINT(1) DEFAULT NULL');
+        $this->addSql('ALTER TABLE trapping_rank DROP qte');
     }
 }

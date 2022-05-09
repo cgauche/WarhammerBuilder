@@ -3,11 +3,6 @@
 {% block title %}Gestion des utilisateurs{% endblock %}
 
 {% block body %}
-<style>
-    select {
-        display: flex;
-    }
-</style>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         var elems = document.querySelectorAll('.modal');
@@ -43,6 +38,7 @@
             dataType : "html",
             success : function(data, status){
                 $("#formUsers").html(data);
+                M.FormSelect.init(document.querySelectorAll('select'),{dropdownOptions:{container:document.body}});
             },
             error : function(error, status, errorThrow){
                 console.log(status + "\n" + errorThrow)

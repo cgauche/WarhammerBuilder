@@ -1,293 +1,162 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edition des races{% endblock %}
+{% block title %}Edition des rangs{% endblock %}
 
 {% block body %}
 <style>
-    .modal {
-        max-height: 80%;
-    }
-
-    #modalTalents{
-        width: 65%;
-    }
-
     .option {
         width: auto !important;
         height: auto !important;
     }
 </style>
 <script>
-
-    /******************** INITIALISATION ***********************/
     document.addEventListener('DOMContentLoaded', function () {
         var elems = document.querySelectorAll('.modal');
         var instances = M.Modal.init(elems, { dismissible: false });
     });
-    window.onload = loadTable;
-    /*********************************************************/
 
+    window.onload = loadTable;
     function loadTable() {
+        var url = '{{ path("readCareersRanks") }}'
         $.ajax({
-            url: "readAllSpecies",
-            type: "POST",
-            dataType: "html",
-            success: function (data, status) {
+            url : url,
+            data : { id : document.getElementById('idCareers').innerHTML },
+            type : "POST",
+            dataType : "html",
+            success : function(data, status){
                 $("#table").html(data);
-                var elems = document.querySelectorAll('.dropdown-trigger');
-                var instances = M.Dropdown.init(elems);
+                M.Dropdown.init(document.querySelectorAll('.dropdown-trigger'));
             },
-            error: function (error, status, errorThrow) {
+            error : function(error, status, errorThrow){
                 console.log(status + "\n" + errorThrow)
             }
         })
     }
 
     function openForm(id = '') {
+        var url = '{{ path("readRanks") }}'
         $.ajax({
-            url: "readSpecies",
-            data: {
-                id: id
+            url : url,
+            data : {
+                id : id
             },
-            type: "POST",
-            dataType: "html",
-            success: function (data, status) {
-                $("#formSpecies").html(data);
+            type : "POST",
+            dataType : "html",
+            success : function(data, status){
+                $("#formRanks").html(data);
                 M.FormSelect.init(document.querySelectorAll('select'),{dropdownOptions:{container:document.body}});
             },
-            error: function (error, status, errorThrow) {
+            error : function(error, status, errorThrow){
                 console.log(status + "\n" + errorThrow)
-            },
-            complete: function () {
-                var elem = document.getElementById('modalSpecies')
-                document.getElementsByClassName('modButton')[0].setAttribute('id', id)
+            },  
+            complete : function (){
+                var elem = document.getElementById('modalRanks')
+                document.getElementsByClassName('modButton')[0].setAttribute('id',id)
                 M.Modal.getInstance(elem).open()
             }
         })
     }
 
-    function openCharac(id = '') {
-        $.ajax({
-            url: "readBaseCharac",
-            data: {
-                id: id
-            },
-            type: "POST",
-            dataType: "html",
-            success: function (data, status) {
-                $("#tableCharacs").html(data);
-            },
-            error: function (error, status, errorThrow) {
-                console.log(status + "\n" + errorThrow)
-            },
-            complete: function () {
-                var elem = document.getElementById('modalCharacs')
-                document.getElementsByClassName('modButtonCharacs')[0].setAttribute('id', id)
-                M.Modal.getInstance(elem).open()
+    function saveRanks(id) {
+        var name = document.getElementById("ranks_name").value
+        var status = document.getElementById("ranks_status").value
+        var idCharac = document.getElementById("ranks_idCharac").value
+        var idCharac2 = document.getElementById("ranks_idCharac2").value
+        var idCharac3 = document.getElementById("ranks_idCharac3").value
+        var idSource = document.getElementById("ranks_idSource").value
+        
+        if(name == '') {
+            M.toast({html : 'Veuillez saisir un nom pour le rang.', classes : 'red lighten-1'})
+        }else if(status == ''){
+            M.toast({html : 'Veuillez sélectionner un status pour le rang.', classes : 'red lighten-1'})
+        }else if(idCharac == ''){
+            M.toast({html : 'Veuillez sélectionner une caractéristique principale pour le rang.', classes : 'red lighten-1'})
+        }else{
+            if( id != ''){
+                var url = '{{ path("updateRanks") }}'
+                $.ajax({
+                    url : url,
+                    data : {
+                        id : id,
+                        idCharac : idCharac,
+                        idCharac2 : idCharac2,
+                        idCharac3 : idCharac3,
+                        name : name,
+                        status : status,
+                        idSource : idSource
+                    },
+                    type : "POST",
+                    dataType : "json",
+                    success : function(data, status){
+                        M.toast({html : 'Rang modifié avec succès !'})
+                        M.Modal.getInstance(document.getElementById('modalRanks')).close()
+                        loadTable();
+                    },
+                    error : function(error, status, errorThrow){
+                        console.log(status + "\n" + errorThrow)
+                    }
+                })
+            }else{
+                var url = '{{ path("createRanks") }}'
+                $.ajax({
+                    url : url,
+                    data : {
+                        id : document.getElementById('idCareers').innerHTML,
+                        idCharac : idCharac,
+                        idCharac2 : idCharac2,
+                        idCharac3 : idCharac3,
+                        name : name,
+                        status : status,
+                        idSource : idSource
+                    },
+                    type : "POST",
+                    dataType : "json",
+                    success : function(data, status){
+                        M.toast({html : 'Rang créé avec succès !'})
+                        M.Modal.getInstance(document.getElementById('modalRanks')).close()
+                        loadTable();
+                    },
+                    error : function(error, status, errorThrow){
+                        console.log(status + "\n" + errorThrow)
+                    }
+                })
             }
-        })
-    }
-
-    function openCareers(id = '') {
-        $.ajax({
-            url: "readAccesCareers",
-            data: {
-                id: id
-            },
-            type: "POST",
-            dataType: "html",
-            success: function (data, status) {
-                $("#tableCareers").html(data);
-            },
-            error: function (error, status, errorThrow) {
-                console.log(status + "\n" + errorThrow)
-            },
-            complete: function () {
-                var elem = document.getElementById('modalCareers')
-                document.getElementsByClassName('modButtonCareers')[0].setAttribute('id', id)
-                M.Modal.getInstance(elem).open()
-            }
-        })
-    }
-
-    function saveCharacs(id = '') {
-        var tableRow = document.getElementById("tableCharacs").getElementsByTagName('tr')
-        var data = {}
-        for (var i = 1; i < tableRow.length; i++) {
-            data[i] = {}
-            data[i]['ID'] = tableRow[i].getElementsByTagName("td")[0].textContent //IDLine
-            data[i]['base'] = tableRow[i].getElementsByTagName("td")[2].getElementsByTagName("input")[0].value //Base
-            data[i]['roll'] = tableRow[i].getElementsByTagName("td")[3].getElementsByTagName("input")[0].value //Roll
-        }
-
-        $.ajax({
-            url: "saveBaseCharac",
-            data: {
-                id: id,
-                data: JSON.stringify(data)
-            },
-            type: "POST",
-            dataType: "json",
-            success: function (data, status) {
-                console.log(data)
-                M.toast({ html: 'Caractéristiques enregistrées avec succès !' })
-                M.Modal.getInstance(document.getElementById('modalCharacs')).close()
-            },
-            error: function (error, status, errorThrow) {
-                console.log(status + "\n" + errorThrow)
-            }
-        })
-    }
-
-    function saveCareers(id = '') {
-        var tableRow = document.getElementById("tableCareers").getElementsByTagName('tr')
-        var data = {}
-        for (var i = 1; i < tableRow.length; i++) {
-            data[i] = {}
-            data[i]['ID'] = tableRow[i].getElementsByTagName("td")[0].textContent //IDLine
-            data[i]['value'] = tableRow[i].getElementsByClassName("switch")[0].children[0].getElementsByTagName("input")[0].checked //Value
-            data[i]['minRoll'] = parseInt(document.getElementById("min"+data[i]['ID']).value)
-            data[i]['maxRoll'] = parseInt(document.getElementById("max"+data[i]['ID']).value)
         }
         
-        $.ajax({
-            url: "saveAccesCareers",
-            data: {
-                id: id,
-                data: JSON.stringify(data)
-            },
-            type: "POST",
-            dataType: "json",
-            success: function (data, status) {
-                M.toast({ html: 'Carrières enregistrées avec succès !' })
-                M.Modal.getInstance(document.getElementById('modalCareers')).close()
-            },
-            error: function (error, status, errorThrow) {
-                console.log(status + "\n" + errorThrow)
-            }
-        })
     }
 
-    function saveSpecies(id) {
-        var name = document.getElementById("species_name").value
-        var desc = document.getElementById("species_description").value
-        var idSource = document.getElementById("species_idSource").value
-        var rollmin = document.getElementById("species_rollmin").value
-        var rollmax = document.getElementById("species_rollmax").value
-        var randomtalents = document.getElementById("species_randomtalents").value
-        var age = document.getElementById("species_age").value
-        var rollage = document.getElementById("species_rollage").value
-        var height = document.getElementById("species_height").value
-        var rollheight = document.getElementById("species_rollheight").value
-        var fate = document.getElementById("species_fate").value
-        var resilience = document.getElementById("species_resilience").value
-        var frSpend = document.getElementById("species_frSpend").value
-
-        if (name == '') {
-            M.toast({ html: 'Veuillez saisir un nom pour la classe.', classes: 'red lighten-1' })
-        } else if (rollmin == '') {
-            M.toast({ html: 'Veuillez saisir un nombre minimun pour le jet de dés.', classes: 'red lighten-1' })
-        } else if (fate == '') {
-            M.toast({ html: 'Veuillez saisir le nombre de points de destin.', classes: 'red lighten-1' })
-        } else if (resilience == '') {
-            M.toast({ html: 'Veuillez saisir le nombre de points de résilience.', classes: 'red lighten-1' })
-        } else if (frSpend == '') {
-            M.toast({ html: 'Veuillez saisir le nombre de points supplémentaires.', classes: 'red lighten-1' })
-        } else {
-            if (id != '') {
-                $.ajax({
-                    url: "updateSpecies",
-                    data: {
-                        id: id,
-                        name: name,
-                        desc: desc,
-                        idSource: idSource,
-                        rollmin: rollmin,
-                        rollmax: rollmax,
-                        randomtalents: randomtalents,
-                        age: age,
-                        rollage: rollage,
-                        height: height,
-                        rollheight: rollheight,
-                        fate: fate,
-                        resilience: resilience,
-                        frSpend: frSpend
-                    },
-                    type: "POST",
-                    dataType: "json",
-                    success: function (data, status) {
-                        M.toast({ html: 'Race modifiée avec succès !' })
-                        M.Modal.getInstance(document.getElementById('modalSpecies')).close()
-                        loadTable();
-                    },
-                    error: function (error, status, errorThrow) {
-                        console.log(status + "\n" + errorThrow)
-                    }
-                })
-            } else {
-                $.ajax({
-                    url: "createSpecies",
-                    data: {
-                        name: name,
-                        desc: desc,
-                        idSource: idSource,
-                        rollmin: rollmin,
-                        rollmax: rollmax,
-                        randomtalents: randomtalents,
-                        age: age,
-                        rollage: rollage,
-                        height: height,
-                        rollheight: rollheight,
-                        fate: fate,
-                        resilience: resilience,
-                        frSpend: frSpend
-                    },
-                    type: "POST",
-                    dataType: "json",
-                    success: function (data, status) {
-                        M.toast({ html: 'Race créé avec succès !' })
-                        M.Modal.getInstance(document.getElementById('modalSpecies')).close()
-                        loadTable();
-                    },
-                    error: function (error, status, errorThrow) {
-                        console.log(status + "\n" + errorThrow)
-                    }
-                })
-            }
-        }
-
-    }
-
-    function delSpecies(id) {
+    function delRanks(id) {
+        var url = '{{ path("deleteRanks") }}'
         $.ajax({
-            url: "deleteSpecies",
-            data: {
-                id: id
+            url : url,
+            data : {
+                id : id
             },
-            type: "POST",
-            dataType: "json",
-            success: function (data, status) {
-                M.toast({ html: 'Race supprimée avec succès !' })
+            type : "POST",
+            dataType : "json",
+            success : function(data, status){
+                M.toast({html : 'Rang supprimé avec succès !'})
                 loadTable();
             },
-            error: function (error, status, errorThrow) {
+            error : function(error, status, errorThrow){
                 console.log(status + "\n" + errorThrow)
             }
         })
     }
 
     function delMsg(id) {
-        var elem = $('#delSpecies')
-        document.getElementsByClassName('delButton')[0].setAttribute('id', id)
+        var elem = $('#delRanks')
+        document.getElementsByClassName('delButton')[0].setAttribute('id',id)
         M.Modal.getInstance(elem).open()
     }
 
     /*************************************************************
-    * GESTION DES COMPETENCES PAR DEFAUT (SkillsSpecies)
+    * GESTION DES COMPETENCES POSSIBLES (SkillsRank)
     *************************************************************/    
     function openSkills(id){
+        var url = '{{ path("readSkillsRanks") }}'
         $.ajax({
-            url: "readSkillsSpecies",
+            url: url,
             data: {
                 id: id
             },
@@ -325,8 +194,9 @@
         opt.innerHTML = 'Sélectionner une compétence ...'
         opt.setAttribute('value','')
         talentList.append(opt)
+        var url = '{{ path("getAllSkills") }}'
         $.ajax({
-            url: "getAllSkills",
+            url: url,
             type: "POST",
             dataType: "JSON",
             success: function (data, status) {
@@ -365,8 +235,9 @@
 
     function haveSpecs(select){
         var cell = select.parentElement.parentElement.parentElement.children[2]
+        var url = '{{ path("haveSpecs") }}'
         $.ajax({
-            url: "haveSpecs",
+            url: url,
             data: {
                 id: select.value
             },
@@ -395,8 +266,9 @@
         var row = button.parentElement.parentElement
         var id = parseInt(row.children[0].innerHTML)
         if(id > 0 && id != undefined && id != null){
+            var url = '{{ path("deleteSkillsRanks") }}'
             $.ajax({
-                url : 'deleteSkillsSpecies',
+                url : url,
                 data : {
                     id : id
                 },
@@ -421,8 +293,9 @@
             data[i]['specs'] = tableRow[i].children[2].children[1].value //specs
         }
 
+        var url = '{{ path("saveSkillsRanks") }}'
         $.ajax({
-            url: "saveSkillsSpecies",
+            url: url,
             data: {
                 id: id,
                 data: JSON.stringify(data)
@@ -440,11 +313,12 @@
     }
 
     /*************************************************************
-    * GESTION DES TALENTS PAR DEFAUT (TalentsSpecies)
+    * GESTION DES TALENTS POSSIBLES (TalentsRank)
     *************************************************************/   
     function openTalents(id){
+        var url = '{{ path("readTalentsRanks") }}'
         $.ajax({
-            url: "readTalentsSpecies",
+            url: url,
             data: {
                 id: id
             },
@@ -482,8 +356,9 @@
         opt.innerHTML = 'Sélectionner une compétence ...'
         opt.setAttribute('value','')
         talentList.append(opt)
+        var url = '{{ path("getAllTalents") }}'
         $.ajax({
-            url: "getAllTalents",
+            url: url,
             type: "POST",
             dataType: "JSON",
             success: function (data, status) {
@@ -505,15 +380,6 @@
                 cellSpec.append(labelSpec)
                 cellSpec.append(inputSpec)
 
-                var cellTalents2 = row.insertCell(-1)
-                cellTalents2.append(labelS.cloneNode(true))
-                cellTalents2.append(talentList.cloneNode(true))
-
-                var cellSpec2 = row.insertCell(-1)
-                cellSpec2.setAttribute('class', 'unvisible')
-                cellSpec2.append(labelSpec.cloneNode(true))
-                cellSpec2.append(inputSpec.cloneNode(true))
-
                 var cellButton = row.insertCell(-1)
                 var buttonDel = document.createElement('a')
                 buttonDel.setAttribute('class', 'waves-effect waves-light btn modal-trigger')
@@ -531,8 +397,9 @@
 
     function talentSpecs(select){
         var cell = select.parentElement.parentElement.nextElementSibling
+        var url = '{{ path("talentSpecs") }}'
         $.ajax({
-            url: "talentSpecs",
+            url: url,
             data: {
                 id: select.value
             },
@@ -561,8 +428,9 @@
         var row = button.parentElement.parentElement
         var id = parseInt(row.children[0].innerHTML)
         if(id > 0 && id != undefined && id != null){
+            var url = '{{ path("deleteTalentsRanks") }}'
             $.ajax({
-                url : 'deleteTalentsSpecies',
+                url : url,
                 data : {
                     id : id
                 },
@@ -585,12 +453,11 @@
             data[i]['id'] = tableRow[i].children[0].textContent //IDLine
             data[i]['idS'] = parseInt(tableRow[i].children[1].children[1].getElementsByTagName("select")[0].value) //IDTalents
             data[i]['specs'] = tableRow[i].children[2].children[1].value //specs
-            data[i]['idS2'] = parseInt(tableRow[i].children[3].children[1].getElementsByTagName("select")[0].value) //IDTalents2
-            data[i]['specs2'] = tableRow[i].children[4].children[1].value //specs2
         }
 
+        var url = '{{ path("saveTalentsRanks") }}'
         $.ajax({
-            url: "saveTalentsSpecies",
+            url: url,
             data: {
                 id: id,
                 data: JSON.stringify(data)
@@ -606,53 +473,188 @@
             }
         })
     }
-    
+
+    /*************************************************************
+    * GESTION DES POSSESSIONS (TrappingRank)
+    *************************************************************/   
+    function openTrapping(id){
+        var url = '{{ path("readRanksTrapping") }}'
+        $.ajax({
+            url: url,
+            data: {
+                id: id
+            },
+            type: "POST",
+            dataType: "html",
+            success: function (data, status) {
+                $("#tableTrapping").html(data);
+                M.FormSelect.init(document.querySelectorAll('select'),{dropdownOptions:{container:document.body}});
+            },
+            error: function (error, status, errorThrow) {
+                console.log(status + "\n" + errorThrow)
+            },
+            complete: function () {
+                var elem = document.getElementById('modalTrapping')
+                document.getElementsByClassName('modButtonTrapping')[0].setAttribute('id', id)
+                M.Modal.getInstance(elem).open()
+            }
+        })
+    }
+
+    function createTrappingLine(){
+        var row = document.getElementById('tableTrapping').insertRow(-1)
+        var cellID = row.insertCell(-1)
+        cellID.setAttribute('class','unvisible')
+        cellID.innerHTML = '-1'
+
+        var cellTrapping = row.insertCell(-1)
+        var labelS = document.createElement('label')
+        labelS.innerHTML = 'Item'
+        var TrappingList = document.createElement('select')
+        TrappingList.setAttribute('name',"trapping")
+        var opt = document.createElement('option')
+        opt.innerHTML = 'Sélectionner un item ...'
+        opt.setAttribute('value','')
+        TrappingList.append(opt)
+        var url = '{{ path("getAllTrapping") }}'
+        $.ajax({
+            url: url,
+            type: "POST",
+            dataType: "JSON",
+            success: function (data, status) {
+                console.log(data)
+                if(data.length != 0){
+                    data.forEach(tab => {
+                        if(tab.data.length > 0){
+                            var optGroup = document.createElement('optgroup')
+                            optGroup.setAttribute('label', tab.name)
+                            for(var i = 0; i < tab.data.length; i++){
+                                opt = document.createElement('option')
+                                opt.innerHTML = tab.data[i].name
+                                opt.setAttribute('value',tab.data[i].id)
+                                optGroup.append(opt)
+                            }
+                            TrappingList.append(optGroup)
+                        }
+                    })
+                }
+
+                cellTrapping.append(labelS)
+                cellTrapping.append(TrappingList)
+                
+                var cellQte = row.insertCell(-1)
+                var labelQte = document.createElement('label')
+                labelQte.innerHTML = 'Quantité'
+                var inputQte = document.createElement('input')
+                cellQte.append(labelQte)
+                cellQte.append(inputQte)
+
+                var cellButton = row.insertCell(-1)
+                cellButton.setAttribute('style','text-align:right')
+                var buttonDel = document.createElement('a')
+                buttonDel.setAttribute('class', 'waves-effect waves-light btn')
+                buttonDel.setAttribute('onclick','delTrappingLine(this)')
+                var icon = document.createElement('i')
+                icon.innerHTML = 'delete'
+                icon.setAttribute('class','material-icons')
+                buttonDel.append(icon)
+                cellButton.append(buttonDel)
+
+                M.FormSelect.init(document.querySelectorAll('select'),{dropdownOptions:{container:document.body}});
+            },
+        })
+    }
+
+    function delTrappingLine(button){
+        var row = button.parentElement.parentElement
+        var id = parseInt(row.children[0].innerHTML)
+        if(id > 0 && id != undefined && id != null){
+            var url = '{{ path("deleteRankTrapping") }}'
+            $.ajax({
+                url : url,
+                data : {
+                    id : id
+                },
+                type : 'POST',
+                dataType : 'JSON',
+                success : function() {
+                    row.remove()
+                }
+            })
+        }else{
+            row.remove()
+        }
+    }
+
+    function saveTrapping(id){
+        var tableRow = document.getElementById("tableTrapping").getElementsByTagName('tr')
+        var data = {}
+        for (var i = 1; i < tableRow.length; i++) {
+            data[i] = {}
+            data[i]['id'] = tableRow[i].children[0].textContent //IDLine
+
+            var tmp = tableRow[i].children[1].children[1].getElementsByTagName("select")[0].value
+            switch(tmp.split("/")[0]){ //type
+                case 'T' : data[i]['type'] = 0 ; break
+                case 'B' : data[i]['type'] = 1 ; break
+                case 'A' : data[i]['type'] = 2 ; break
+            }
+            data[i]['idT'] = parseInt(tmp.split("/")[1]) //IDTrapping
+            data[i]['qte'] = tableRow[i].children[2].children[1].value //qte
+        }
+
+        var url = '{{ path("saveRankTrapping") }}'
+        $.ajax({
+            url: url,
+            data: {
+                id: id,
+                data: JSON.stringify(data)
+            },
+            type: "POST",
+            dataType: "json",
+            success: function (data, status) {
+                M.toast({ html: 'Possessions par défaut enregistrés avec succès !' })
+                M.Modal.getInstance(document.getElementById('modalTrapping')).close()
+            },
+            error: function (error, status, errorThrow) {
+                console.log(status + "\n" + errorThrow)
+            }
+        })
+    }
 </script>
 <div class="container">
     <div class="section">
-        <h3 style="text-align:center">Edition des races</h3>
+        <h3 style="text-align:center">Edition des rangs de la classe {{nameC}}</h3>
     </div>
-    <a class="wave-effect wave-light btn" href="{{path('homeAdmin')}}">Retour</a>
-    <table id='table'>
-    </table>
+    <span class='unvisible' id='idCareers'>{{id}}</span>
+    <a class="wave-effect wave-light btn" href="{{path('editCareers')}}">Retour</a>
+    <table id='table'></table>
 
-    <!-- Modal modalSpecies -->
-    <div id="modalSpecies" class="modal">
+    <!-- Modal modalRanks -->
+    <div id="modalRanks" class="modal">
         <div class="modal-content">
-            <h4 id="formTitle">Classe</h4>
-            <div id='formSpecies' class="input-field row"></div>
+            <h4 id="formTitle">Rang</h4>
+            <div id='formRanks' class="input-field"></div>
         </div>
         <div class="modal-footer">
-            <a onclick="saveSpecies(this.id)" class="wave-effect wave-green btn-flat modButton">Enregistrer</a>
+            <a onclick="saveRanks(this.id)" class="wave-effect wave-green btn-flat modButton">Enregistrer</a>
             <a href="#!" class="modal-close wave-effect wave-red btn-flat">Annuler</a>
         </div>
     </div>
 
-    <!-- Modal modalCharacs -->
-    <div id="modalCharacs" class="modal">
+    <!-- Modal deleteRanks -->
+    <div id="delRanks" class="modal">
         <div class="modal-content">
-            <h4 id="titleCharac">Caractéristiques de base de la race</h4>
-            <div class="input-field row">
-                <table id="tableCharacs"></table>
-            </div>
+            <h4>Attention !</h4>
+            <p>
+                Cette suppression est irréversible.
+                <br>
+                Voulez-vous continuer ?
+            </p>
         </div>
         <div class="modal-footer">
-            <a onclick="saveCharacs(this.id)" class="wave-effect wave-green btn-flat modButtonCharacs">Enregistrer</a>
-            <a href="#!" class="modal-close wave-effect wave-red btn-flat">Annuler</a>
-        </div>
-    </div>
-
-    <!-- Modal modalCareers -->
-    <div id="modalCareers" class="modal">
-        <div class="modal-content">
-            <h4 id="titleCharac">Carrières disponibles de la race</h4>
-            <div class="input-field row">
-                <table id="tableCareers"></table>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <a onclick="saveCareers(this.id)" class="wave-effect wave-green btn-flat modButtonCareers">Enregistrer</a>
-            <a href="#!" class="modal-close wave-effect wave-red btn-flat">Annuler</a>
+            <a onclick="delRanks(this.id)" class="modal-close wave-effect wave-green btn-flat delButton">Oui</a>
+            <a href="#!" class="modal-close wave-effect wave-red btn-flat">Non</a>
         </div>
     </div>
 
@@ -683,22 +685,18 @@
             <a class="modal-close wave-effect wave-red btn-flat">Annuler</a>
         </div>
     </div>
-
-    <!-- Modal deleteSpecies -->
-    <div id="delSpecies" class="modal">
+    <!-- Modal modalTrapping -->
+    <div id="modalTrapping" class="modal">
         <div class="modal-content">
-            <h4>Attention !</h4>
-            <p>
-                Cette suppression est irréversible.
-                <br>
-                Voulez-vous continuer ?
-            </p>
+            <h4 id="titleTrapping">Possession par défaut de la classe</h4>
+            <div class="input-field">
+                <table id="tableTrapping"></table>
+            </div>
         </div>
         <div class="modal-footer">
-            <a onclick="delSpecies(this.id)" class="modal-close wave-effect wave-green btn-flat delButton">Oui</a>
-            <a href="#!" class="modal-close wave-effect wave-red btn-flat">Non</a>
+            <a onclick="saveTrapping(this.id)" class="wave-effect wave-green btn-flat modButtonTrapping">Enregistrer</a>
+            <a class="modal-close wave-effect wave-red btn-flat">Annuler</a>
         </div>
     </div>
 </div>
-
 {% endblock %}

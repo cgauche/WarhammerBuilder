@@ -4,8 +4,8 @@
 
 {% block body %}
 <style>
-    select {
-        display: flex;
+    .modal {
+        max-height: 80%;
     }
 </style>
 <script>
@@ -39,6 +39,7 @@
             dataType : "html",
             success : function(data, status){
                 $("#formTalents").html(data);
+                M.FormSelect.init(document.querySelectorAll('select'),{dropdownOptions:{container:document.body}});
             },
             error : function(error, status, errorThrow){
                 console.log(status + "\n" + errorThrow)
@@ -57,6 +58,8 @@
         var maxRoll = document.getElementById("talents_maxRoll").value
         var max = document.getElementById("talents_Max").value
         var test = document.getElementById("talents_Test").value
+        var idSkills = document.getElementById("talents_idSkills").value
+        var specs = document.getElementById("talents_specs").value
         var description = document.getElementById("talents_description").value
         var idSource = document.getElementById("talents_idSource").value
 
@@ -77,6 +80,8 @@
                         maxRoll : maxRoll,
                         max : max,
                         test : test,
+                        idSkills : idSkills,
+                        specs : specs,
                         description : description,
                         idSource : idSource
                     },
@@ -100,6 +105,8 @@
                         maxRoll : maxRoll,
                         max : max,
                         test : test,
+                        idSkills : idSkills,
+                        specs : specs,
                         description : description,
                         idSource : idSource
                     },

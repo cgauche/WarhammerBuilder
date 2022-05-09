@@ -62,6 +62,16 @@ class Talents
      */
     private $Test;
 
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $idSkills;
+
+    /**
+     * @ORM\Column(type="string", length=500, nullable=true)
+     */
+    private $specs;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -147,6 +157,42 @@ class Talents
     public function setTest(?string $Test): self
     {
         $this->Test = $Test;
+
+        return $this;
+    }
+
+    public function getIdSkills(): ?int
+    {
+        return $this->idSkills;
+    }
+
+    public function setIdSkills(?int $idSkills): self
+    {
+        $this->idSkills = $idSkills;
+
+        return $this;
+    }
+
+    public function getSpecName(): ?string
+    {
+        return $this->specName;
+    }
+
+    public function setSpecName(?string $specName): self
+    {
+        $this->specName = $specName;
+
+        return $this;
+    }
+
+    public function getSpecs(): ?string
+    {
+        return $this->specs;
+    }
+
+    public function setSpecs(?string $specs): self
+    {
+        $this->specs = $specs;
 
         return $this;
     }

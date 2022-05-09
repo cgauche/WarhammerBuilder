@@ -3,15 +3,6 @@
 {% block title %}Edition des sorts{% endblock %}
 
 {% block body %}
-<!-- Override graphic framework, do some shit on select input -->
-<style>
-    select {
-        display: flex;
-    }
-
-    .modal{
-        max-height: 80%;
-    }
 </style>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -44,6 +35,7 @@
             dataType : "html",
             success : function(data, status){
                 $("#formSpells").html(data);
+                M.FormSelect.init(document.querySelectorAll('select'),{dropdownOptions:{container:document.body}});
             },
             error : function(error, status, errorThrow){
                 console.log(status + "\n" + errorThrow)

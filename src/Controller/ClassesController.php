@@ -11,6 +11,10 @@ use Doctrine\Persistence\ManagerRegistry;
 use App\Form\ClassesType;
 use App\Entity\Classes;
 use App\Entity\Source;
+use App\Entity\ClassTrapping;
+use App\Entity\Trapping;
+use App\Entity\BagsContainers;
+use App\Entity\Armoury;
 
 class ClassesController extends AbstractController
 {
@@ -104,4 +108,110 @@ class ClassesController extends AbstractController
         $entityManager->flush(); 
         return new JSONResponse(['result' => "OK"]);
     }
+
+    /*************************************************************
+    * GESTION DES POSSESSIONS PAR DEFAUT (ClassTrapping)
+    *************************************************************/
+
+    #[Route('/admin/readClassTrapping', name : 'readClassTrapping', methods : ['POST'])]
+    public function readClassTrapping(ManagerRegistry $doctrine, Request $request){
+        $listT = $doctrine->getRepository(Trapping::class)->findAll();
+        $listBC = $doctrine->getRepository(BagsContainers::class)->findAll();
+        $listA = $doctrine->getRepository(Armoury::class)->findAll();
+        
+        $result = [];
+        $ClassTrapping = $doctrine->getRepository(ClassTrapping::class)->findBy(['idClasses' => $request->request->get('id')]);
+        foreach ($ClassTrapping as $ct) {
+            $result[] = [
+                'id' => $ct->getId(),
+                'type' => $ct->getType(),
+                'tID' => $ct->getIdTrapping(),
+                'qte' => $ct->getQte()
+            ];
+        }
+
+        return new Response($this->renderView('classes/tableClassTrapping.html.twig',[
+            'trappings' => $result,
+            'listT' => $listT,
+            'listBC' => $listBC,
+            'listA' => $listA
+        ]));
+    }
+
+    #[Route('/admin/getAllTrapping', name : 'getAllTrapping', methods : ['POST'])]
+    public function getAllTrapping(ManagerRegistry $doctrine, Request $request){
+        $result = [];
+       
+        $temp = [];
+        $Trapping = $doctrine->getRepository(Trapping::class)->findAll();
+        foreach ($Trapping as $t) {
+            $temp[] = [
+                'id' => 'T/'.$t->getId(),
+                'name' => $t->getName()
+            ];
+        }
+        $result[] = [
+            'name' => "Items",
+            'data' => $temp
+        ];
+
+        $temp = [];
+        $Bags = $doctrine->getRepository(BagsContainers::class)->findAll();
+        foreach ($Bags as $bc) {
+            $temp[] = [
+                'id' => 'B/'.$bc->getId(),
+                'name' => $bc->getName()
+            ];
+        }
+        $result[] = [
+            'name' => "Sacs",
+            'data' => $temp
+        ];
+
+        $temp = [];
+        $Armoury = $doctrine->getRepository(Armoury::class)->findAll();
+        foreach ($Armoury as $a) {
+            $temp[] = [
+                'id' => 'A/'.$a->getId(),
+                'name' => $a->getName()
+            ];
+        }
+        $result[] = [
+            'name' => "Armes & armures",
+            'data' => $temp
+        ];
+        return new JSONResponse($result);
+    }
+
+    #[Route('/admin/deleteClassTrapping', name : 'deleteClassTrapping', methods : ['POST'])]
+    public function deleteClassTrapping(ManagerRegistry $doctrine, Request $request){
+        $ct = $doctrine->getRepository(ClassTrapping::class)->find($request->request->get('id'));
+        $entityManager = $doctrine->getManager();
+        $entityManager->remove($ct);
+        $entityManager->flush(); 
+        return new JSONResponse(['result' => "OK"]);
+    }
+
+    #[Route('/admin/saveClassTrapping', name : 'saveClassTrapping', methods : ['POST'])]
+    public function saveClassTrapping(ManagerRegistry $doctrine, Request $request){
+        $entityManager = $doctrine->getManager();
+        $data = json_decode($request->request->get('data'),true);
+        
+        foreach ($data as $d) {
+            if($d['id'] >= 0){
+                $ct = $doctrine->getRepository(ClassTrapping::class)->find($d['id']);
+            }else{
+                $ct = new ClassTrapping();
+            }
+            $ct->setIdClasses($request->request->get('id'));
+            $ct->setIdTrapping($d['idT']);
+            $ct->setType($d['type']);
+            $ct->setQte($d['qte']);
+            $entityManager->persist($ct);
+        }
+
+        $entityManager->flush();
+        return new JSONResponse(['result' => "OK"]);
+    }
+
 }

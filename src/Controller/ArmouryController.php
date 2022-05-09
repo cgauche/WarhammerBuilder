@@ -83,7 +83,7 @@ class ArmouryController extends AbstractController
             $desc = $request->request->get('desc');
             $arm->setDescription($desc == '' ? null : $desc);
             $idSource = $request->request->get('idSource');
-            $arm->setIdSource($idSource == '' ? null : $idSource);
+            $arm->setIdSource($idSource == '' ? 0 : $idSource);
             
             $entityManager = $doctrine->getManager();
             $entityManager->persist($arm);
@@ -137,7 +137,7 @@ class ArmouryController extends AbstractController
             $desc = $request->request->get('desc');
             $arm->setDescription($desc == '' ? null : $desc);
             $idSource = $request->request->get('idSource');
-            $arm->setIdSource($idSource == '' ? null : $idSource);
+            $arm->setIdSource($idSource == '' ? 0 : $idSource);
             
             $entityManager = $doctrine->getManager();
             $entityManager->persist($arm);

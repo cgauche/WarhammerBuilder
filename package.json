@@ -16,6 +16,7 @@
         "build": "encore production --progress"
     },
     "dependencies": {
+        "jquery": "^3.6.0",
         "svelte": "^3.44.2",
         "svelte-loader": "^3.1.2"
     }

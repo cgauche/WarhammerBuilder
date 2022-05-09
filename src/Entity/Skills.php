@@ -24,7 +24,7 @@ class Skills
     /**
      * @var string|null
      *
-     * @ORM\Column(name="Name", type="string", length=20, nullable=true)
+     * @ORM\Column(name="Name", type="string", length=50, nullable=true)
      */
     private $name;
 
@@ -38,14 +38,14 @@ class Skills
     /**
      * @var string|null
      *
-     * @ORM\Column(name="Description", type="string", length=1000, nullable=true)
+     * @ORM\Column(name="Description", type="string", length=2000, nullable=true)
      */
     private $description;
 
     /**
      * @var string|null
      *
-     * @ORM\Column(name="Specs", type="string", nullable=true)
+     * @ORM\Column(name="Specs", type="string", length=500, nullable=true)
      */
     private $specs;
 

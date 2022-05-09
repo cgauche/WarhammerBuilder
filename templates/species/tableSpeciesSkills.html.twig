@@ -1,0 +1,45 @@
+<tr>
+        <th class="unvisible"></th>
+        <th colspan="2">Nom (Spécialité)</th>
+        <th>
+                <a class="waves-effect waves-light btn" onclick="createSkillsLine()"><i
+                class="material-icons">add_circle_outline</i></a>
+        </th>
+</tr>
+{% for skill in skills %}
+<tr>
+        <td class="unvisible" id="skillsID">{{skill['id']}}</td>
+        <td class="width250">
+                <label>Compétence</label>
+                <select name="skill" id="skill{{skill['id']}}" onchange="haveSpecs(this)" required>
+                        {% if skill['sID'] == "" %}
+                                <option value="" selected>Sélectionner une compétence...</option>        
+                        {% else %}
+                                <option value="">Sélectionner une compétence...</option>        
+                        {% endif %}
+
+                        {% for s in listS %}
+                                {% if skill['sID'] == s.id %}
+                                        <option value="{{s.id}}" selected>{{s.name}}</option>
+                                {% else %}
+                                        <option value="{{s.id}}">{{s.name}}</option>
+                                {% endif %}
+                        {% endfor %}
+                </select>
+        </td>
+        
+        {% if skill['specs'] == "" %}
+                <td class="unvisible width250">
+        {% else %}
+                <td class="width250">
+        {% endif %} 
+        
+                <label for="specs{{skill['id']}}">Specs</label>
+                <input id="specs{{skill['id']}}" value="{{skill['specs']}}" class="autocomplete">
+        </td>
+        <td>
+                <a class="waves-effect waves-light btn modal-trigger" onclick="delSkillsLine(this)" id="{{skill['id']}}"><i
+                        class="material-icons">delete</i></a>
+        </td>
+</tr>
+{% endfor %}

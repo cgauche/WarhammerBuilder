@@ -3,18 +3,6 @@
 {% block title %}Edition des compétences{% endblock %}
 
 {% block body %}
-<!-- Override graphic framework, do some shit on select input -->
-<style>
-    #modalSkills {
-        min-height: 80% !important;
-    }
-    .dropdown-content li{
-        min-height: 10px;
-    }
-    .dropdown-content li>span{
-        line-height: 10px;
-    }
-</style>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         var elems = document.querySelectorAll('.modal');
@@ -46,7 +34,7 @@
             dataType : "html",
             success : function(data, status){
                 $("#formSkills").html(data);
-                M.FormSelect.init(document.querySelectorAll('select'));
+                M.FormSelect.init(document.querySelectorAll('select'),{dropdownOptions:{container:document.body}});
             },
             error : function(error, status, errorThrow){
                 console.log(status + "\n" + errorThrow)
