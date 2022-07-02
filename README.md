@@ -11,5 +11,5 @@
 7. Let's go !
 
 ## Testing
-Route for Compendium : http://localhost:8000/builder
+Route for Compendium : http://localhost:8000/builder <br>
 Route for admin : http://localhost:8000/admin/home
